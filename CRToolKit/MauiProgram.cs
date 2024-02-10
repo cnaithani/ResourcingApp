@@ -1,7 +1,10 @@
-﻿using CRToolKit.Interfaces;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Storage;
+using CRToolKit.Interfaces;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 
+[assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace CRToolKit;
 
 public static class MauiProgram
@@ -11,6 +14,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -27,16 +31,17 @@ public static class MauiProgram
 
         builder = RegisterAppServices(builder);
         var app =  builder.Build();
-		/*
-        Task.Run(async () =>
-        {
-            await Task.Delay(4000);
-        }).Wait();
-		*/
+		
+        //Task.Run(async () =>
+        //{
+        //    await Task.Delay(1000);
+        //}).Wait();
+		
 		return app;
     }
     public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder mauiAppBuilder)
     {
+        mauiAppBuilder.Services.AddSingleton<IFolderPicker>(FolderPicker.Default);
         mauiAppBuilder.Services.AddSingleton<ICommonDeviceHelper, CommonDeviceHelper>();
         return mauiAppBuilder;
     }

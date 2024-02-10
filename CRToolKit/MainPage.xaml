@@ -3,6 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CRToolKit.MainPage">
 
+    <!--<StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="Center">
+        <Label Text="Select Folder for Processing:"/>
+        <StackLayout Orientation="Vertical">
+            <Button x:Name="btnBrowse" Clicked="btnBrowse_Clicked" 
+                    Height="28" Width="28" Margin="35,0,0,0"
+                    HorizontalOptions="Start"  Background="Transparent">
+                --><!--<Image Source="pack://application:,,,/Unakin;component/Resources/add.png" Width="24" Height="24"/>--><!--
+            </Button>
+            <Grid Margin="5,5,5,0">
+                --><!--<in
+                <Tex x:Name="txtImage" Margin="0,0,5,10" IsReadOnly="True" />
+                <TextBlock x:Name="watermarkImage" Margin="5,0" IsHitTestVisible="False" FontStyle="Italic" Foreground="Gray">Select Image</TextBlock>--><!--
+            </Grid>
+
+        </StackLayout>
+    </StackLayout>-->
+
+    <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="Center">
+        <Label Text="Select Folder for Processing:" HorizontalOptions="Center"/>
+        <ImageButton Grid.Column="1"  VerticalOptions="Start" HorizontalOptions="Center" HeightRequest="50" WidthRequest="50"
+            Source="folder.png"  BackgroundColor="Transparent" Aspect="Center"
+            Clicked="btnBrowse_Clicked">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup>
+                        <VisualState x:Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="1.0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.8" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+        </ImageButton>
+        <Label x:Name="lblPath" Text=""/>
+        <Button Text="Process" CornerRadius="10" HeightRequest="30" Margin="0,10,0,0"></Button>
+    </StackLayout>    
+
 
 </ContentPage>
 

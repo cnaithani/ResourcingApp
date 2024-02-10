@@ -1,4 +1,9 @@
-﻿namespace CRToolKit;
+﻿
+using System.Threading.Tasks;
+using System.Threading;
+using CommunityToolkit.Maui.Storage;
+
+namespace CRToolKit;
 
 public partial class MainPage : ContentPage
 {
@@ -8,16 +13,8 @@ public partial class MainPage : ContentPage
 	{
 		InitializeComponent();
 		
-        /*
-        Task.Run(async () =>
-        {
-            await Task.Delay(2000);
-        }).Wait();
-		*/
 		
     }
-
-	
 
     void Theme_Toggled(System.Object sender, Microsoft.Maui.Controls.ToggledEventArgs e)
     {
@@ -31,6 +28,15 @@ public partial class MainPage : ContentPage
 		{
             Application.Current.UserAppTheme = AppTheme.Dark;
             Preferences.Set("APPTHEME", "Dark");
+        }
+    }
+
+    private async void btnBrowse_Clicked(object sender, EventArgs e)
+    {
+        var result = await FolderPicker.Default.PickAsync(CancellationToken.None);
+        if (result.IsSuccessful)
+        {
+            lblPath.Text = result.Folder.Path;
         }
     }
 }
