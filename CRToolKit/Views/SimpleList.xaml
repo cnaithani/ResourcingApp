@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="http://schemas.microsoft.com/dotnet/2021/maui"
+             x:Class="CRToolKit.Views.SimpleList"
+             Title="Simple List"
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}">
+    <StackLayout VerticalOptions="FillAndExpand">
+        <StackLayout VerticalOptions="StartAndExpand">
+            <ScrollView Margin="0,35,0,0">
+                <ListView   BackgroundColor="Transparent"
+                        ItemsSource="{Binding ProductList}"
+                        SeparatorVisibility="None"
+                        HasUnevenRows="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Border StrokeThickness="4" StrokeShape="RoundRectangle 10,10,0,0" Margin="5,5,5,5" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceL}, Dark={StaticResource SurfaceD}}">
+                                    <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                                        <StackLayout Margin="5,5,5,0" VerticalOptions="Start" HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                                            <StackLayout VerticalOptions="Start"  HorizontalOptions="FillAndExpand" BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryL}, Dark={StaticResource PrimaryD}}">
+                                                <Grid HorizontalOptions="FillAndExpand">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="5*"/>
+                                                        <ColumnDefinition Width="1*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Grid.Column="0" Margin="5,0,0,0"  Text="{Binding Code}" HorizontalOptions="StartAndExpand" VerticalOptions="Center"  HorizontalTextAlignment="Center" Style="{StaticResource lblHeader2OnPrimary}"></Label>
+                                                    <ImageButton Grid.Column="1"  VerticalOptions="Start" HorizontalOptions="End" HeightRequest="50" WidthRequest="50"
+                                                Source="{AppThemeBinding Light=edit24w.png, Dark=edit24w.png}" BackgroundColor="Transparent" Aspect="Center"
+                                                    Command="{Binding Path=BindingContext.OnProductDetailNavigation, Source={x:Reference Name=_activityList}}"
+                                                    CommandParameter="{Binding ProductId}">
+                                                        <VisualStateManager.VisualStateGroups>
+                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                <VisualState x:Name="Normal">
+                                                                    <VisualState.Setters>
+                                                                        <Setter Property="Scale"
+                                                                Value="1.0" />
+                                                                    </VisualState.Setters>
+                                                                </VisualState>
+                                                                <VisualState x:Name="Pressed">
+                                                                    <VisualState.Setters>
+                                                                        <Setter Property="Scale"
+                                                                Value="0.8" />
+                                                                    </VisualState.Setters>
+                                                                </VisualState>
+                                                            </VisualStateGroup>
+                                                        </VisualStateManager.VisualStateGroups>
+                                                    </ImageButton>
+                                                </Grid>
+                                            </StackLayout>
+                                        </StackLayout>
+                                        <BoxView HeightRequest="2" Margin="5,1,5,5" Style="{StaticResource boxViewBorder}"></BoxView>
+                                        <StackLayout Margin="5,0,5,10" Spacing="5" Orientation="Vertical" BackgroundColor="{AppThemeBinding Light={StaticResource OnPrimaryL}, Dark={StaticResource OnPrimaryD}}">
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="Description: " Style="{StaticResource lblHeader3OnSurface}"></Label>
+                                                <Label Text="{Binding Description}"></Label>
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="Dimentions: " Style="{StaticResource lblHeader3OnSurface}"></Label>
+                                                <Label Text="{Binding Dimentions}"></Label>
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="About: " Style="{StaticResource lblHeader3OnSurface}"></Label>
+                                                <Label Text="{Binding DetailedDescription}"></Label>
+                                            </StackLayout>
+
+                                        </StackLayout>
+                                    </StackLayout>
+                                </Border>
+
+
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <!--<ImageButton Source="add64.png" VerticalOptions="End"></ImageButton>-->
+            </ScrollView>
+        </StackLayout>
+        <StackLayout  IsVisible="{Binding ShowAdd}" VerticalOptions="End" HeightRequest="64" Margin="0,0,0,10">
+            <ImageButton Source="add64.png" Aspect="AspectFit" VerticalOptions="End"
+                         HeightRequest="48" WidthRequest="48"
+                         BackgroundColor="Transparent">
+                <ImageButton.Shadow>
+                    <Shadow Brush="Black"
+                    Offset="5,5"
+                    Opacity="0.5" />
+                </ImageButton.Shadow>
+
+            </ImageButton>
+        </StackLayout>
+    </StackLayout>
+    <!--
+<Border StrokeThickness="4"
+        StrokeShape="RoundRectangle 40,0,0,40"
+        Background="#2B0B98"
+        Padding="16,8"
+        HorizontalOptions="Center">
+    <Border.Stroke>
+        <LinearGradientBrush EndPoint="0,1">
+            <GradientStop Color="Orange"
+                          Offset="0.1" />
+            <GradientStop Color="Brown"
+                          Offset="1.0" />
+        </LinearGradientBrush>
+    </Border.Stroke>
+    <Label Text=".NET MAUI"
+           TextColor="White"
+           FontSize="18"
+           FontAttributes="Bold" />
+</Border>
+-->
+
+</controls:ContentPage>

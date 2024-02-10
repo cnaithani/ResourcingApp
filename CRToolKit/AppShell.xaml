@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CRToolKit.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:CRToolKit"
+    xmlns:views="clr-namespace:CRToolKit.Views"
+    BackgroundColor="{AppThemeBinding Light={StaticResource AppColorL}, Dark={StaticResource AppColorD}}"
+    >
+   
+    <TabBar Route="Main"> 
+        <Tab Route="Home" Icon="home32.png" Title="Home" >
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
+        </Tab>
+        <Tab Icon="list32.png"  Title="List">
+            <ShellContent  Title="List 1" ContentTemplate="{DataTemplate views:SimpleList}"/>
+            <ShellContent  Title="List 2" ContentTemplate="{DataTemplate views:GridViewList}"/>
+        </Tab>
+        <Tab Icon="reports32.png"  Title="Charts">
+            <ShellContent  Title="Line Chart" ContentTemplate="{DataTemplate views:SimpleList}"/>
+            <ShellContent  Title="Pie Chart" ContentTemplate="{DataTemplate views:SimpleList}"/>
+            <ShellContent  Title="Pie Chart" ContentTemplate="{DataTemplate local:MainPage}"/>
+        </Tab>
+        <Tab Icon="notification32.png"  Title="Notifications">
+            <ShellContent  Title="Line Chart" ContentTemplate="{DataTemplate views:SimpleList}"/>
+        </Tab>
+        <Tab Icon="setting32.png"  Title="Settings">
+            <ShellContent  Title="Settings" ContentTemplate="{DataTemplate views:AppSettings}"/>
+        </Tab>
+    </TabBar>
+
+</Shell>
+

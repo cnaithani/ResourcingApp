@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64.000999"
+   height="64.000999"
+   viewBox="0 0 16.933385 16.933384"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.1 (9c6d41e4, 2022-07-14)"
+   sodipodi:docname="add64.svg"
+   inkscape:export-filename="../../../../Volumes/Macintosh HD/Volumes/Macintosh HD/Users/Work/CRToolKit/Images/F:\Work\FocusApp\Source\V1.0\Images\ImprovementIndicatorUp.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="false"
+     inkscape:document-units="px"
+     showgrid="false"
+     inkscape:snap-bbox="false"
+     inkscape:bbox-paths="false"
+     inkscape:bbox-nodes="false"
+     inkscape:snap-bbox-edge-midpoints="false"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-nodes="false"
+     units="px"
+     inkscape:snap-grids="false"
+     inkscape:snap-to-guides="false"
+     inkscape:lockguides="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="7.9999996"
+     inkscape:cx="48.000002"
+     inkscape:cy="37.125002"
+     inkscape:window-width="1470"
+     inkscape:window-height="818"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     inkscape:snap-others="false"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
+    <sodipodi:guide
+       position="2.0579495,8.4668245"
+       orientation="0,1"
+       id="guide10311"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="-65.293127,44.62216"
+       orientation="0.70710678,-0.70710678"
+       id="guide108"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="8.46656,29.281082"
+       orientation="-1,0"
+       id="guide274"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient3576"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3574" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2929"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#800000;stop-opacity:1;"
+         offset="0"
+         id="stop2927" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="opacity:1">
+    <path
+       style="display:none;fill:#00ff00;fill-rule:nonzero;stroke:#000000;stroke-width:0.26458;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0, 2.91038;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 3.0785646,8.0914831 V 3.2086907 c 0,0 -1.9193756,1.7117075 -1.7221888,1.1063751 C 2.3300845,1.3259341 4.6307963,0.24183139 4.3069167,0.56125893 3.9322179,0.24353466 5.9916784,1.1145714 7.4366812,4.3533115 7.7141662,4.9752493 5.5365236,3.1193705 5.5365236,3.1193705 l 0.062828,4.9211184 z"
+       id="path1132"
+       sodipodi:nodetypes="ccscsccc" />
+    <rect
+       style="display:none;fill:#ff7f2a;fill-rule:evenodd;stroke-width:0.26458"
+       id="rect3694"
+       width="6.033534"
+       height="1.3563758"
+       x="1.2160609"
+       y="3.6481831"
+       ry="0.37417263"
+       inkscape:export-filename="F:\Work\FocusApp\Source\V1.0\Images\ImprovementIndicatorConstant.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <circle
+       style="fill:#00dac6;fill-opacity:1;stroke-width:0.282321"
+       id="path328"
+       cx="8.6995144"
+       cy="8.5124283"
+       r="8.4665604" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke-width:0.102145"
+       id="rect1843"
+       width="1.0393499"
+       height="9.2607737"
+       x="7.951169"
+       y="3.9335136"
+       ry="0.61738485" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke-width:0.107284"
+       id="rect1847"
+       width="10.289747"
+       height="0.83053976"
+       x="3.461097"
+       y="8.0447121"
+       ry="0.41526988" />
+  </g>
+</svg>
