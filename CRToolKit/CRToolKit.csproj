@@ -60,7 +60,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="6.1.0" />
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+		<PackageReference Include="OpenAI" Version="1.10.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.5" />
 		<PackageReference Include="SQLitePCLRaw.core" Version="2.1.5" />
@@ -101,7 +103,6 @@
 	  <Folder Include="Classes\" />
 	  <Folder Include="ViewModel\" />
 	  <Folder Include="DTO\" />
-	  <Folder Include="Models\" />
 	  <Folder Include="Global\" />
 	  <Folder Include="Modules\" />
 	  <Folder Include="Modules\GridViewList\" />

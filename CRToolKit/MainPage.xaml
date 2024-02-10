@@ -43,7 +43,9 @@
             </VisualStateManager.VisualStateGroups>
         </ImageButton>
         <Label x:Name="lblPath" Text=""/>
-        <Button Text="Process" CornerRadius="10" HeightRequest="30" Margin="0,10,0,0"></Button>
+        <Button Text="Process" CornerRadius="10" HeightRequest="30" Margin="0,10,0,0"
+                Clicked="Process_Clicked"></Button>
+        <Label x:Name="lblStatus" Text="" HorizontalOptions="Start" TextColor="Red" Margin="0,10,0,0"/>
     </StackLayout>    
 
 
