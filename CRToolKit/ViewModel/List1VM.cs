@@ -22,8 +22,8 @@ namespace CRToolKit.Views
             {
                 return new Command<Int32>(async (activitySummaryId) =>
                 {
-                    var detailPage = new MainPage();
-                    await Navigation.PushModalAsync(detailPage);
+                    //var detailPage = new MainPage();
+                    //await Navigation.PushModalAsync(detailPage);
                 });
             }
         }

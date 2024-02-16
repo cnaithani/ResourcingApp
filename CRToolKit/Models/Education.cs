@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace CRToolKit.Models
 {
-    internal class Candidate
+    internal class Education
     {
         [SQLite.PrimaryKey]
         public int Id { get; set; }
+        public int CandidateId { get; set; }
         public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public int Rating { get; set; } 
-        public string FilePath { get; set; }
-        public DateTime Modified { get; set; }
+        public string College { get; set; }
+        public string Year { get; set; }
+        public string Grade { get; set; }
+
     }
 }

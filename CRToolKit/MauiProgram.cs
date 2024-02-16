@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Storage;
 using CRToolKit.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
+using System.Reflection;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace CRToolKit;
@@ -29,13 +31,18 @@ public static class MauiProgram
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MjU2OTA4OEAzMjMyMmUzMDJlMzBIcVQrbGkvMkpjWUQ0L0srdjB6QU1nTnBEblllWU5zRjBEMk5UQ2dUMlhjPQ==");
 
 
+        var asmb = Assembly.GetExecutingAssembly();
+        using var stream = asmb.GetManifestResourceStream("CRToolKit.appsettings.json");
+
+        var config = new ConfigurationBuilder()
+                    .AddJsonStream(stream)
+                    .Build();
+        builder.Configuration.AddConfiguration(config);
+
+        builder.Services.AddTransient<MainPage>();
+
         builder = RegisterAppServices(builder);
         var app =  builder.Build();
-		
-        //Task.Run(async () =>
-        //{
-        //    await Task.Delay(1000);
-        //}).Wait();
 		
 		return app;
     }

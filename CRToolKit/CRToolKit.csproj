@@ -61,6 +61,8 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="6.1.0" />
 		<PackageReference Include="DocumentFormat.OpenXml" Version="3.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 		<PackageReference Include="OpenAI" Version="1.10.0" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
@@ -72,6 +74,7 @@
 		<PackageReference Include="Syncfusion.Maui.ListView" Version="22.1.38" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="appsettings.json" />
 	  <None Remove="Views\" />
 	  <None Remove="Resources\Images\list-2-32.svg" />
 	  <None Remove="Resources\Images\list32.svg" />
@@ -102,7 +105,6 @@
 	  <Folder Include="Interfaces\" />
 	  <Folder Include="Classes\" />
 	  <Folder Include="ViewModel\" />
-	  <Folder Include="DTO\" />
 	  <Folder Include="Global\" />
 	  <Folder Include="Modules\" />
 	  <Folder Include="Modules\GridViewList\" />
@@ -121,6 +123,11 @@
 	  <BundleResource Include="Resources\Images\reports32.svg" />
 	  <BundleResource Include="Resources\Images\home32.svg" />
 	  <BundleResource Include="Resources\Raw\AppSQLite.db3" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 	  <MauiAsset Update="Resources\Raw\AppSQLite.db3">

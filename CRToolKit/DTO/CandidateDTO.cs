@@ -4,17 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRToolKit.Models
+namespace CRToolKit.DTO
 {
-    internal class Candidate
+    internal class CandidateDTO
     {
-        [SQLite.PrimaryKey]
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public int Rating { get; set; } 
-        public string FilePath { get; set; }
-        public DateTime Modified { get; set; }
+        public string Summary { get; set; }
     }
 }
