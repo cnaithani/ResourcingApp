@@ -28,9 +28,9 @@ public partial class MainPage : ContentPage
     string seprator1 = "|";
     string seprator2 = "#-#";
     string seprator3 = "#Ø#";
-    string seprator4 = "#:#";
-
-
+    string seprator4 = "#,#";
+    string seprator5 = "#:#";
+    
     public MainPage(IConfiguration config)
     {
         InitializeComponent();
@@ -145,55 +145,30 @@ public partial class MainPage : ContentPage
 
             var sbPrompt = new StringBuilder();
             var sbSystemMsg = new StringBuilder();
-            sbPrompt.AppendLine("text:Following is text retrived from a resume - ");
-            sbPrompt.AppendLine(txt);
-            sbPrompt.AppendLine("question_to_ask: Provide following information - ");
+            sbPrompt.AppendLine("You are a text processing agent working with candidates resumes.");
+            sbPrompt.AppendLine("Extract specified values from the source text.");
+            sbPrompt.AppendLine("Return answer as JSON object with following fields:");
             sbPrompt.AppendLine("Name");
             sbPrompt.AppendLine("Email");
             sbPrompt.AppendLine("Phone");
             sbPrompt.AppendLine("Qualification");
-            sbPrompt.AppendLine("Work History");
+            sbPrompt.AppendLine("Work_History");
             sbPrompt.AppendLine("Summary");
-
-            sbSystemMsg.AppendLine("Desired format:");
-            sbSystemMsg.AppendLine(string.Concat("Name", seprator2, "James Collingwood", seprator1) );
-            sbSystemMsg.AppendLine(string.Concat("Email", seprator2, "james.collingwood@gmail.com", seprator1));
-            sbSystemMsg.AppendLine(string.Concat("Phone", seprator2, "703-561-2213", seprator1));
-            //sbSystemMsg.AppendLine(string.Concat("Qualification" , seprator2, "Degree",seprator4 ,"B.A, Percentage: 59%, University: Osaka State University", seprator3));
-            //sbSystemMsg.AppendLine(string.Concat("Qualification", seprator2, "Intermidiate, Percentage: 59%, University: Osaka State University", seprator1));
-            sbSystemMsg.AppendLine(string.Concat("Work History" , seprator2, "Company: ABC Ltd., Designation: Sr. Software Engineer, Period: May, 2005 - June, 2008 (3 Years 1 Month)" + Environment.NewLine + "Company: Microsoft Ltd.., Designation: Sr. Engineering Manager, Period: June, 2008 - August, 2009 (1 Years 2 Month)", seprator1));
-            sbSystemMsg.AppendLine(string.Concat("Summary" , seprator2, "17+ years of Experience in designing and developing applications using Microsoft Technology Stack (C#, VB.Net,.Net, .Net Core, ASP.Net MVC, ASP.Net, SQL Server) , Javascript Frameworks(Angular, D3JS) and Cloud (Azure)", seprator1));
+            sbPrompt.AppendLine("Do not infer any data based on previous training, strictly use only source text given below as input.");
+            sbPrompt.AppendLine("========");
+            sbPrompt.AppendLine(txt);
+            sbPrompt.AppendLine("========");
 
             conversation = ChatGPT.CreateConversation();
             conversation.AppendUserInput(sbPrompt.ToString());
             conversation.AppendSystemMessage(sbSystemMsg.ToString());
             var returnChat = (await SendRequestAsync()).Split(seprator1);
 
-            candidate.Name = GetVal(returnChat,"Name", seprator2);
-            candidate.Email = returnChat[1].Split(seprator2)[1].Trim();
-            candidate.Phone = returnChat[2].Split(seprator2)[1].Trim();
-            candidate.Modified = DateTime.Now;
-
-            //conversation.AppendUserInput("question_to_ask: We require candidate with skills Software Engineering, C#, SQL, Javascript. How much skills of this candidate matches with desired skills in scale from 1 to 5 considering his/her skills mentioned in resume and compare with desired skills.");
-            //conversation.AppendSystemMessage("1 is poor match, 5 is excellent match");
-            //conversation.AppendSystemMessage("Desired format:" + "Software Engineering - 2,C# - 1 , SQL - 1, Javascript - 3");
-            //var rating = await SendRequestAsync();
-            //candidate.Rating = int.Parse(rating.Split("-")[1][1].ToString());
-
-            //conversation.AppendUserInput("question_to_ask: What are key skills of candidate?");
-            //conversation.AppendSystemMessage("Desired format: Software Engineering,C#,SQL,Javascript,Management,Leadership");
-            //var rating = await SendRequestAsync();
-
+            var candidateDTO = GetData(returnChat);
 
             //Get local template file path from config
             var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
             var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString(); ;
-
-            var candidateDTO = new CandidateDTO();
-            candidateDTO.Name = candidate.Name;
-            candidateDTO.Email = candidate.Email;
-            candidateDTO.Phone = candidate.Phone;
-            candidateDTO.Summary = GetVal(returnChat, "Summary", seprator2); ;
 
             candidate.FilePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
 
@@ -205,6 +180,17 @@ public partial class MainPage : ContentPage
             Console.WriteLine(ex.Message);
         }
         return candidate;
+    }
+
+    CandidateDTO GetData(string[] candidateArr )
+    {
+        var candidateDTO = new CandidateDTO();
+        candidateDTO.Name = GetVal(candidateArr, "Name", seprator2);
+        candidateDTO.Email = GetVal(candidateArr, "Email", seprator2);
+        candidateDTO.Phone = GetVal(candidateArr, "Phone", seprator2);
+        candidateDTO.Summary = GetVal(candidateArr, "Summary", seprator2);
+
+        return candidateDTO;
     }
 
     String TransformFile(CandidateDTO candidate, string templateFilePath, string redultDirpath)
@@ -276,5 +262,109 @@ public partial class MainPage : ContentPage
         return keyStr.Split(seprator)[1].Trim();
     }
 }
+
+
+
+/* Old Code
+     private async Task<Candidate> Process(string file)
+    {
+        Candidate candidate = new Candidate();
+        StringBuilder stringBuilder;
+        try
+        {
+            using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(file, false))
+            {
+                NameTable nameTable = new NameTable();
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
+                xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+
+                string wordprocessingDocumentText;
+                using (StreamReader streamReader = new StreamReader(wordprocessingDocument.MainDocumentPart.GetStream()))
+                {
+                    wordprocessingDocumentText = streamReader.ReadToEnd();
+                }
+
+                stringBuilder = new StringBuilder(wordprocessingDocumentText.Length);
+
+                XmlDocument xmlDocument = new XmlDocument(nameTable);
+                xmlDocument.LoadXml(wordprocessingDocumentText);
+
+                XmlNodeList paragraphNodes = xmlDocument.SelectNodes("//w:p", xmlNamespaceManager);
+                foreach (XmlNode paragraphNode in paragraphNodes)
+                {
+                    XmlNodeList textNodes = paragraphNode.SelectNodes(".//w:t | .//w:tab | .//w:br", xmlNamespaceManager);
+                    foreach (XmlNode textNode in textNodes)
+                    {
+                        switch (textNode.Name)
+                        {
+                            case "w:t":
+                                stringBuilder.Append(textNode.InnerText);
+                                break;
+
+                            case "w:tab":
+                                stringBuilder.Append("\t");
+                                break;
+
+                            case "w:br":
+                                stringBuilder.Append("\v");
+                                break;
+                        }
+                    }
+
+                    stringBuilder.Append(Environment.NewLine);
+                }
+            }
+
+            var txt = stringBuilder.ToString();
+
+            var sbPrompt = new StringBuilder();
+            var sbSystemMsg = new StringBuilder();
+            sbPrompt.AppendLine("text:Following is text retrived from a resume - ");
+            sbPrompt.AppendLine(txt);
+            sbPrompt.AppendLine("question_to_ask: Provide following information - ");
+            sbPrompt.AppendLine("Name");
+            sbPrompt.AppendLine("Email");
+            sbPrompt.AppendLine("Phone");
+            sbPrompt.AppendLine("Qualification");
+            sbPrompt.AppendLine("Work History");
+            sbPrompt.AppendLine("Summary");
+
+            sbSystemMsg.AppendLine("Desired format:");
+            sbSystemMsg.AppendLine(string.Concat("Name", seprator2, "James Collingwood"));
+            sbSystemMsg.Append(seprator1);
+            sbSystemMsg.AppendLine(string.Concat("Email", seprator2, "james.collingwood@gmail.com"));
+            sbSystemMsg.Append(seprator1);
+            sbSystemMsg.AppendLine(string.Concat("Phone", seprator2, "703-561-2213"));
+            sbSystemMsg.Append(seprator1);
+            sbSystemMsg.AppendLine(string.Concat("Qualification", seprator2, "Degree", seprator5, "B.A", seprator4, " Percentage", seprator5, " 59%", seprator4, " University", seprator5, "Osaka State University", seprator3));
+            sbSystemMsg.Append(seprator1);
+            sbSystemMsg.AppendLine(string.Concat("Work History", seprator2, "Company", seprator5, " ABC Ltd.", seprator4, " Designation", seprator5, " Sr. Software Engineer", seprator4, " Period", seprator5, " May, 2005 - June, 2008", seprator4));
+            sbSystemMsg.AppendLine(string.Concat("Work History", seprator2, "Company", seprator5, " Microsoft INC Ltd.", seprator4, " Designation", seprator5, " Sr. Engineering Manager", seprator4, " Period", seprator5, " June, 2008 - August, 2009", seprator4));
+            sbSystemMsg.Append(seprator1);
+            sbSystemMsg.AppendLine(string.Concat("Summary" , seprator2, "17+ years of Experience in designing and developing applications using Microsoft Technology Stack (C#, VB.Net,.Net, .Net Core, ASP.Net MVC, ASP.Net, SQL Server) , Javascript Frameworks(Angular, D3JS) and Cloud (Azure)"));
+
+            conversation = ChatGPT.CreateConversation();
+            conversation.AppendUserInput(sbPrompt.ToString());
+            conversation.AppendSystemMessage(sbSystemMsg.ToString());
+            var returnChat = (await SendRequestAsync()).Split(seprator1);
+
+            var candidateDTO = GetData(returnChat);
+
+            //Get local template file path from config
+            var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
+            var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString(); ;
+
+            candidate.FilePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
+
+            await Task.Delay(waitMillisecond);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        return candidate;
+    }
+ */
 
 
