@@ -6,11 +6,15 @@ using System.Xml;
 using OpenAI_API.Chat;
 using System.Text;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using CRToolKit.Models;
 using CRToolKit.DTO;
 using System.Runtime.ConstrainedExecution;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Maui.Controls;
+using Newtonsoft.Json;
+using DocumentFormat.OpenXml.Drawing;
+using CRToolKit.Classes;
 
 namespace CRToolKit;
 
@@ -21,7 +25,7 @@ public partial class MainPage : ContentPage
     int totalFile = 0;
     int processedFile = 0;
     int errorFile = 0;
-    int waitMillisecond = 1000;
+    int waitMillisecond = 45000;
     Conversation conversation;
     List<Candidate> Candidates = new List<Candidate>();
     IConfiguration Config;
@@ -144,16 +148,15 @@ public partial class MainPage : ContentPage
             var txt = stringBuilder.ToString();
 
             var sbPrompt = new StringBuilder();
-            var sbSystemMsg = new StringBuilder();
             sbPrompt.AppendLine("You are a text processing agent working with candidates resumes.");
             sbPrompt.AppendLine("Extract specified values from the source text.");
             sbPrompt.AppendLine("Return answer as JSON object with following fields:");
-            sbPrompt.AppendLine("Name");
-            sbPrompt.AppendLine("Email");
-            sbPrompt.AppendLine("Phone");
-            sbPrompt.AppendLine("Qualification");
-            sbPrompt.AppendLine("Work_History");
-            sbPrompt.AppendLine("Summary");
+            sbPrompt.AppendLine("\"Name\" <string>");
+            sbPrompt.AppendLine("\"Email\" <string>");
+            sbPrompt.AppendLine("\"Phone\" <string>");
+            sbPrompt.AppendLine("\"Qualification\" [{}]");
+            sbPrompt.AppendLine("\"WorkHistory\" [{}]");
+            sbPrompt.AppendLine("\"Summary\" <string>");
             sbPrompt.AppendLine("Do not infer any data based on previous training, strictly use only source text given below as input.");
             sbPrompt.AppendLine("========");
             sbPrompt.AppendLine(txt);
@@ -161,18 +164,18 @@ public partial class MainPage : ContentPage
 
             conversation = ChatGPT.CreateConversation();
             conversation.AppendUserInput(sbPrompt.ToString());
-            conversation.AppendSystemMessage(sbSystemMsg.ToString());
-            var returnChat = (await SendRequestAsync()).Split(seprator1);
+            var returnChat = await SendRequestAsync();
 
-            var candidateDTO = GetData(returnChat);
+            var candidateDTO  = JsonConvert.DeserializeObject<CandidateDTO>(returnChat);
+            await GetWork(conversation, candidateDTO.WorkHistory);
+
 
             //Get local template file path from config
             var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
             var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString(); ;
-
             candidate.FilePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
 
-            await Task.Delay(waitMillisecond);
+            //await Task.Delay(waitMillisecond);
 
         }
         catch (Exception ex)
@@ -181,6 +184,37 @@ public partial class MainPage : ContentPage
         }
         return candidate;
     }
+
+    async Task GetWork(Conversation chat, List<WorkHistoryDTO> workList)
+    {
+        foreach (var work in workList)
+        {
+            try
+            {
+               await GetWorkDetails(chat, work);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("TooManyRequests")){
+                    await Task.Delay(waitMillisecond);
+                    await GetWorkDetails(chat, work);
+                }
+            }
+
+        }
+    }
+
+    async Task GetWorkDetails(Conversation chat, WorkHistoryDTO work)
+    {
+
+        var sbPrompt = new StringBuilder();
+        var tenure = work.Dates != null ? work.Dates : work.Duration;
+        tenure = (tenure == null) ? string.Empty : tenure;
+        sbPrompt.AppendLine(string.Concat("Please tell bullet point summary of candidate's work in ", work.Company, " during ", tenure));
+        conversation.AppendUserInput(sbPrompt.ToString());
+        work.Summary = await SendRequestAsync();
+    }
+
 
     CandidateDTO GetData(string[] candidateArr )
     {
@@ -225,6 +259,8 @@ public partial class MainPage : ContentPage
                 throw new ArgumentNullException("MainDocumentPart and/or Body is null.");
             }
 
+            TransformWorkHistory(candidate, wordDoc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains("SWUMM")).ToList(),wordDoc);
+
             using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
             {
                 docText = sr.ReadToEnd();
@@ -234,6 +270,7 @@ public partial class MainPage : ContentPage
             docText = docText.Replace("EML", candidate.Email);
             docText = docText.Replace("MOB", candidate.Phone);
             docText = docText.Replace("SUMM", candidate.Summary);
+            docText = TransformWorkHistory(candidate, docText);
 
             using (StreamWriter sw = new StreamWriter(wordDoc.MainDocumentPart.GetStream(FileMode.Create)))
             {
@@ -242,6 +279,42 @@ public partial class MainPage : ContentPage
 
             return targetFilePath;
         }
+    }
+
+    void TransformWorkHistory(CandidateDTO candidate, List<DocumentFormat.OpenXml.Wordprocessing.Paragraph> paras, WordprocessingDocument doc)
+    {
+
+        var desig = "DESG";
+        var summ = "SWUMM";
+        int ctrWork = candidate.WorkHistory.Count;
+        var writer = new SimpleDocWriter();
+        for (int ctr = 0; ctr < ctrWork; ctr++)
+        {
+            var workText = candidate.WorkHistory[ctr].Summary.Split("\n- ");
+            if (workText!=null && workText.Length>0 && workText[0].StartsWith("-"))
+            {
+                workText[0] = workText[0][1..].Trim();
+            }
+            var para = paras[ctr];
+            writer.AddBulletListInPara(doc, para, workText.ToList(), summ + (ctr+1).ToString());
+        }
+
+
+    }
+    string TransformWorkHistory(CandidateDTO candidate, string docText)
+    {
+        int ctr = 1;
+        var desig = "DESG";
+        var summ = "SWUMM";
+        foreach(var work in candidate.WorkHistory)
+        {
+            var desigCur = desig + ctr.ToString();
+            var summCur = summ + ctr.ToString();
+            docText = docText.Replace(desigCur, work.Position);
+            docText = docText.Replace(summCur, work.Summary);
+            ctr += 1;
+        }
+        return docText;
     }
 
     private async System.Threading.Tasks.Task<string> SendRequestAsync()

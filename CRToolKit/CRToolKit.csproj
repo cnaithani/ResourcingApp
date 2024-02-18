@@ -103,7 +103,6 @@
 	  <Folder Include="Views\" />
 	  <Folder Include="Data\" />
 	  <Folder Include="Interfaces\" />
-	  <Folder Include="Classes\" />
 	  <Folder Include="ViewModel\" />
 	  <Folder Include="Global\" />
 	  <Folder Include="Modules\" />
