@@ -15,6 +15,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Reflection.Metadata;
 using Microsoft.Maui.Graphics;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace CRToolKit.Classes
 {
@@ -143,6 +144,9 @@ namespace CRToolKit.Classes
 
             foreach(var sentence in sentences)
             {
+                if (sentence.Contains("I'm sorry"))
+                    continue;
+
                 Paragraph newPara = new Paragraph();
                 if (inserAfter == null)
                 {
@@ -157,6 +161,13 @@ namespace CRToolKit.Classes
             body.RemoveChild(para);
         }
 
+        public void ReplacePara(Paragraph para, string searchtext,string replacetext)
+        {
+            if (replacetext.Contains("I'm sorry"))
+                return;
+
+            para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
+        }
 
         public void Dispose()
         {

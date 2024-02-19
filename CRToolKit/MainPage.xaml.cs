@@ -34,7 +34,7 @@ public partial class MainPage : ContentPage
     string seprator3 = "#Ø#";
     string seprator4 = "#,#";
     string seprator5 = "#:#";
-    
+
     public MainPage(IConfiguration config)
     {
         InitializeComponent();
@@ -165,9 +165,11 @@ public partial class MainPage : ContentPage
             conversation = ChatGPT.CreateConversation();
             conversation.AppendUserInput(sbPrompt.ToString());
             var returnChat = await SendRequestAsync();
+            returnChat = returnChat.Replace("```json", string.Empty).Replace("```", string.Empty);
 
-            var candidateDTO  = JsonConvert.DeserializeObject<CandidateDTO>(returnChat);
+            var candidateDTO = JsonConvert.DeserializeObject<CandidateDTO>(returnChat);
             await GetWork(conversation, candidateDTO.WorkHistory);
+            candidateDTO.Rating = await GetRating(conversation);
 
 
             //Get local template file path from config
@@ -191,16 +193,55 @@ public partial class MainPage : ContentPage
         {
             try
             {
-               await GetWorkDetails(chat, work);
+                await GetWorkDetails(chat, work);
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("TooManyRequests")){
+                if (ex.Message.Contains("TooManyRequests"))
+                {
                     await Task.Delay(waitMillisecond);
                     await GetWorkDetails(chat, work);
                 }
             }
 
+        }
+    }
+
+    async Task<int> GetRating(Conversation chat)
+    {
+        TRYAGAIN:
+        try
+        {
+            var sbPrompt = new StringBuilder();
+            sbPrompt.AppendLine(string.Concat("Please tell primary skills of candidate "));
+            sbPrompt.AppendLine("Return answer as comma saprated string ");
+            conversation.AppendUserInput(sbPrompt.ToString());
+            var response = await SendRequestAsync();
+            var skillArr = response.Split("\n");
+            if (skillArr.Count() > 1)
+            {
+                skillArr = skillArr[1].Split(",").Select(x => x.Trim().ToLower()).ToArray();
+            }
+            else
+            {
+                skillArr = skillArr[0].Split(",").Select(x => x.Trim().ToLower()).ToArray();
+            }
+            var primaySkill = pSkill.Text.Split(",").Select(x => x.Trim().ToLower()).ToArray();
+            var matchCount = primaySkill.Count(x => skillArr.Contains(x));
+            var totCount = primaySkill.Count();
+
+            var retCount = (int)Math.Ceiling(decimal.Parse(((((matchCount) * 5) / totCount)).ToString()));
+            return retCount;
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("TooManyRequests"))
+            {
+                await Task.Delay(waitMillisecond);
+                goto TRYAGAIN;
+                
+            }
+            return 0;
         }
     }
 
@@ -216,7 +257,7 @@ public partial class MainPage : ContentPage
     }
 
 
-    CandidateDTO GetData(string[] candidateArr )
+    CandidateDTO GetData(string[] candidateArr)
     {
         var candidateDTO = new CandidateDTO();
         candidateDTO.Name = GetVal(candidateArr, "Name", seprator2);
@@ -251,7 +292,7 @@ public partial class MainPage : ContentPage
 
         using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(targetFilePath, true))
         {
-            string? docText = null;
+            //string? docText = null;
 
 
             if (wordDoc.MainDocumentPart is null)
@@ -259,63 +300,91 @@ public partial class MainPage : ContentPage
                 throw new ArgumentNullException("MainDocumentPart and/or Body is null.");
             }
 
-            TransformWorkHistory(candidate, wordDoc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains("SWUMM")).ToList(),wordDoc);
-
-            using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
-            {
-                docText = sr.ReadToEnd();
-            }
-
-            docText = docText.Replace("NME", candidate.Name);
-            docText = docText.Replace("EML", candidate.Email);
-            docText = docText.Replace("MOB", candidate.Phone);
-            docText = docText.Replace("SUMM", candidate.Summary);
-            docText = TransformWorkHistory(candidate, docText);
-
-            using (StreamWriter sw = new StreamWriter(wordDoc.MainDocumentPart.GetStream(FileMode.Create)))
-            {
-                sw.Write(docText);
-            }
+            TransformWorkHistory(candidate, wordDoc);
+            TransformBasicInfo(candidate, wordDoc);
 
             return targetFilePath;
         }
     }
 
-    void TransformWorkHistory(CandidateDTO candidate, List<DocumentFormat.OpenXml.Wordprocessing.Paragraph> paras, WordprocessingDocument doc)
+    void TransformBasicInfo(CandidateDTO candidate, WordprocessingDocument doc)
+    {
+        var writer = new SimpleDocWriter();
+        var name = "NME";
+        var email = "EML";
+        var mob = "MOB";
+        var sum = "SUMM";
+
+        var namePara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(name)).FirstOrDefault();
+        if (namePara != null)
+            writer.ReplacePara(namePara, name, candidate.Name);
+
+        var emailPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(email)).FirstOrDefault();
+        if (emailPara != null)
+            writer.ReplacePara(emailPara, email, candidate.Email);
+
+        var mobPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(mob)).FirstOrDefault();
+        if (mobPara != null)
+            writer.ReplacePara(mobPara, mob, candidate.Phone);
+
+        var sumPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(sum)).FirstOrDefault();
+        if (sumPara != null)
+            writer.ReplacePara(sumPara, sum, candidate.Summary);
+
+    }
+
+    void TransformWorkHistory(CandidateDTO candidate, WordprocessingDocument doc)
     {
 
         var desig = "DESG";
         var summ = "SWUMM";
+        var com = "WADD";
+        var dur = "DUR";
         int ctrWork = candidate.WorkHistory.Count;
         var writer = new SimpleDocWriter();
+
+        //Repeace work Summs
+        var workSummParas = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(summ)).ToList();
+        var desigParas = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(desig)).ToList();
+        var comParas = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(com)).ToList();
+        var durParas = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(dur)).ToList();
+
         for (int ctr = 0; ctr < ctrWork; ctr++)
         {
             var workText = candidate.WorkHistory[ctr].Summary.Split("\n- ");
-            if (workText!=null && workText.Length>0 && workText[0].StartsWith("-"))
+            if (workText != null && workText.Length > 0 && workText[0].StartsWith("-"))
             {
                 workText[0] = workText[0][1..].Trim();
             }
-            var para = paras[ctr];
-            writer.AddBulletListInPara(doc, para, workText.ToList(), summ + (ctr+1).ToString());
-        }
+            var para = workSummParas[ctr];
+            writer.AddBulletListInPara(doc, para, workText.ToList(), summ + (ctr + 1).ToString());
 
+            para = desigParas[ctr];
+            writer.ReplacePara(para, desig + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Position);
 
-    }
-    string TransformWorkHistory(CandidateDTO candidate, string docText)
-    {
-        int ctr = 1;
-        var desig = "DESG";
-        var summ = "SWUMM";
-        foreach(var work in candidate.WorkHistory)
-        {
-            var desigCur = desig + ctr.ToString();
-            var summCur = summ + ctr.ToString();
-            docText = docText.Replace(desigCur, work.Position);
-            docText = docText.Replace(summCur, work.Summary);
-            ctr += 1;
+            para = comParas[ctr];
+            writer.ReplacePara(para, com + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Company);
+
+            para = durParas[ctr];
+            writer.ReplacePara(para, dur + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Duration);
         }
-        return docText;
     }
+
+    //string TransformWorkHistory(CandidateDTO candidate, string docText)
+    //{
+    //    int ctr = 1;
+    //    var desig = "DESG";
+    //    var summ = "SWUMM";
+    //    foreach(var work in candidate.WorkHistory)
+    //    {
+    //        var desigCur = desig + ctr.ToString();
+    //        var summCur = summ + ctr.ToString();
+    //        docText = docText.Replace(desigCur, work.Position);
+    //        docText = docText.Replace(summCur, work.Summary);
+    //        ctr += 1;
+    //    }
+    //    return docText;
+    //}
 
     private async System.Threading.Tasks.Task<string> SendRequestAsync()
     {
@@ -328,7 +397,7 @@ public partial class MainPage : ContentPage
 
     private String GetVal(string[] vals, string key, string seprator)
     {
-        var keyStr = vals.Where(x=>x.Contains(key + seprator)).FirstOrDefault();
+        var keyStr = vals.Where(x => x.Contains(key + seprator)).FirstOrDefault();
         if (String.IsNullOrEmpty(keyStr))
             return string.Empty;
 

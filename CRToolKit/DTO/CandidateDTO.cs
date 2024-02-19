@@ -11,6 +11,7 @@ namespace CRToolKit.DTO
         public string Name { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public int Rating { get; set; }
         public List<QualificationDTO> Qualification { get; set; }
         public List<WorkHistoryDTO> WorkHistory { get; set; }
         public string Summary { get; set; }
