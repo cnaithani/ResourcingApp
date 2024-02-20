@@ -15,6 +15,7 @@ namespace CRToolKit.DTO
         public List<QualificationDTO> Qualification { get; set; }
         public List<WorkHistoryDTO> WorkHistory { get; set; }
         public string Summary { get; set; }
+        public string KeySkills { get; set; }
     }
 
     public class WorkHistoryDTO

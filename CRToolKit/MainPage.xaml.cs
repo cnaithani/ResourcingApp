@@ -98,6 +98,8 @@ public partial class MainPage : ContentPage
 
     private async Task<Candidate> Process(string file)
     {
+        TRYAGAIN:
+
         Candidate candidate = new Candidate();
         StringBuilder stringBuilder;
         try
@@ -169,19 +171,30 @@ public partial class MainPage : ContentPage
 
             var candidateDTO = JsonConvert.DeserializeObject<CandidateDTO>(returnChat);
             await GetWork(conversation, candidateDTO.WorkHistory);
-            candidateDTO.Rating = await GetRating(conversation);
-
+            await GetRating(conversation, candidateDTO);
 
             //Get local template file path from config
             var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
             var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString(); ;
-            candidate.FilePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
+            var filePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
 
-            //await Task.Delay(waitMillisecond);
+            candidate.FilePath = filePath;
+
+            candidate.Name = candidateDTO.Name;
+            candidate.Email = candidateDTO.Email;
+            candidate.Phone = candidateDTO.Phone;
+            candidate.Skills = candidateDTO.KeySkills;
+
+            await App.Database.database.InsertAsync(candidate);
 
         }
         catch (Exception ex)
         {
+            if (ex.Message.Contains("TooManyRequests"))
+            {
+                await Task.Delay(waitMillisecond);
+                goto TRYAGAIN;
+            }
             Console.WriteLine(ex.Message);
         }
         return candidate;
@@ -207,7 +220,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    async Task<int> GetRating(Conversation chat)
+    async Task GetRating(Conversation chat, CandidateDTO candidate)
     {
         TRYAGAIN:
         try
@@ -231,7 +244,7 @@ public partial class MainPage : ContentPage
             var totCount = primaySkill.Count();
 
             var retCount = (int)Math.Ceiling(decimal.Parse(((((matchCount) * 5) / totCount)).ToString()));
-            return retCount;
+            candidate.Rating =  retCount;
         }
         catch (Exception ex)
         {
@@ -241,7 +254,7 @@ public partial class MainPage : ContentPage
                 goto TRYAGAIN;
                 
             }
-            return 0;
+            candidate.Rating = 0;
         }
     }
 
