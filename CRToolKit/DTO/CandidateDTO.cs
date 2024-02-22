@@ -13,6 +13,8 @@ namespace CRToolKit.DTO
         public string Email { get; set; }
         public string Phone { get; set; }
         public int Rating { get; set; }
+        public string Address { get; set; }
+        public string Linkedin { get; set; }
         public List<QualificationDTO> Qualification { get; set; }
         public List<WorkHistoryDTO> WorkHistory { get; set; }
         public string Summary { get; set; }

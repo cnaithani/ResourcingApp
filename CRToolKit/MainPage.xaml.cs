@@ -26,6 +26,7 @@ public partial class MainPage : ContentPage
     int processedFile = 0;
     int errorFile = 0;
     int waitMillisecond = 45000;
+    SimpleDocWriter writer = new SimpleDocWriter();
     Conversation conversation;
     List<Candidate> Candidates = new List<Candidate>();
     IConfiguration Config;
@@ -160,6 +161,8 @@ public partial class MainPage : ContentPage
             sbPrompt.AppendLine("\"Qualification\" [{}]");
             sbPrompt.AppendLine("\"WorkHistory\" [{}]");
             sbPrompt.AppendLine("\"Summary\" <string>");
+            sbPrompt.AppendLine("\"Address\" <string>");
+            sbPrompt.AppendLine("\"Linkedin\" <string>");
             sbPrompt.AppendLine("Do not infer any data based on previous training, strictly use only source text given below as input.");
             sbPrompt.AppendLine("========");
             sbPrompt.AppendLine(txt);
@@ -180,7 +183,6 @@ public partial class MainPage : ContentPage
             var filePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
 
             candidate.FilePath = filePath;
-
             candidate.Name = candidateDTO.Name;
             candidate.Email = candidateDTO.Email;
             candidate.Phone = candidateDTO.Phone;
@@ -228,12 +230,14 @@ public partial class MainPage : ContentPage
         TRYAGAIN:
         try
         {
+            var replace1 = "The primary skills of the candidate are:";
+
             var sbPrompt = new StringBuilder();
             sbPrompt.AppendLine(string.Concat("Please tell primary skills of candidate "));
             sbPrompt.AppendLine("Return answer as comma saprated string ");
             conversation.AppendUserInput(sbPrompt.ToString());
             var response = await SendRequestAsync();
-            var skillArr = response.Split("\n");
+            var skillArr = response.Replace(replace1,string.Empty).Split("\n");
             var skills = string.Empty;
             if (skillArr.Count() > 1)
             {
@@ -283,7 +287,8 @@ public partial class MainPage : ContentPage
         candidateDTO.Name = GetVal(candidateArr, "Name", seprator2);
         candidateDTO.Email = GetVal(candidateArr, "Email", seprator2);
         candidateDTO.Phone = GetVal(candidateArr, "Phone", seprator2);
-        candidateDTO.Summary = GetVal(candidateArr, "Summary", seprator2);
+        candidateDTO.Address = GetVal(candidateArr, "Address", seprator2);
+        candidateDTO.Linkedin = GetVal(candidateArr, "Linkedin", seprator2);
 
         return candidateDTO;
     }
@@ -328,29 +333,21 @@ public partial class MainPage : ContentPage
     }
 
     void TransformBasicInfo(CandidateDTO candidate, WordprocessingDocument doc)
+    {       
+        AddPara(doc, "NME", candidate.Name);
+        AddPara(doc, "EML", candidate.Email);
+        AddPara(doc, "MOB", candidate.Phone);
+        AddPara(doc, "SUMM", candidate.Summary);
+        AddPara(doc, "DAWD", candidate.Address);
+        AddPara(doc, "LNKIN", candidate.Linkedin);
+        AddPara(doc, "SKLL", candidate.KeySkills.Replace(","," |"));
+    }
+
+    void AddPara(WordprocessingDocument doc, string varNama, string replaceChar)
     {
-        var writer = new SimpleDocWriter();
-        var name = "NME";
-        var email = "EML";
-        var mob = "MOB";
-        var sum = "SUMM";
-
-        var namePara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(name)).FirstOrDefault();
-        if (namePara != null)
-            writer.ReplacePara(namePara, name, candidate.Name);
-
-        var emailPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(email)).FirstOrDefault();
-        if (emailPara != null)
-            writer.ReplacePara(emailPara, email, candidate.Email);
-
-        var mobPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(mob)).FirstOrDefault();
-        if (mobPara != null)
-            writer.ReplacePara(mobPara, mob, candidate.Phone);
-
-        var sumPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(sum)).FirstOrDefault();
-        if (sumPara != null)
-            writer.ReplacePara(sumPara, sum, candidate.Summary);
-
+        var addPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(varNama)).FirstOrDefault();
+        if (addPara != null)
+            writer.ReplacePara(addPara, varNama, replaceChar);
     }
 
     void TransformWorkHistory(CandidateDTO candidate, WordprocessingDocument doc)
@@ -390,22 +387,6 @@ public partial class MainPage : ContentPage
         }
     }
 
-    //string TransformWorkHistory(CandidateDTO candidate, string docText)
-    //{
-    //    int ctr = 1;
-    //    var desig = "DESG";
-    //    var summ = "SWUMM";
-    //    foreach(var work in candidate.WorkHistory)
-    //    {
-    //        var desigCur = desig + ctr.ToString();
-    //        var summCur = summ + ctr.ToString();
-    //        docText = docText.Replace(desigCur, work.Position);
-    //        docText = docText.Replace(summCur, work.Summary);
-    //        ctr += 1;
-    //    }
-    //    return docText;
-    //}
-
     private async System.Threading.Tasks.Task<string> SendRequestAsync()
     {
         var cancellationTokenSource = new CancellationTokenSource();
@@ -418,7 +399,7 @@ public partial class MainPage : ContentPage
     private String GetVal(string[] vals, string key, string seprator)
     {
         var keyStr = vals.Where(x => x.Contains(key + seprator)).FirstOrDefault();
-        if (String.IsNullOrEmpty(keyStr))
+        if (String.IsNullOrEmpty(keyStr)|| keyStr.Contains("Not Provided"))
             return string.Empty;
 
         return keyStr.Split(seprator)[1].Trim();
