@@ -10,8 +10,10 @@ namespace CRToolKit.Views
 	{
         public List1VM()
         {
-            PopulateProds();
+            PopulateCandidates();
         }
+
+        public List<CandidateDTO> CandidateList { get; set; }
         public List<ProductListDTO> ProductList { get; set; }
         public string DisplayProductDescription { get; set; }
         public bool ShowAdd { get; set; } = false;
@@ -28,7 +30,6 @@ namespace CRToolKit.Views
             }
         }
 
-
         private async void PopulateProds()
         {
             var prodList = await App.Database.database.Table<Product>().ToListAsync();
@@ -44,6 +45,25 @@ namespace CRToolKit.Views
             ShowAdd = true;
             OnPropertyChanged("ProductList");
             OnPropertyChanged("ShowAdd");
+        }
+
+        private async void PopulateCandidates()
+        {
+            var candList = await App.Database.database.Table<Candidate>().OrderByDescending(x=>x.Modified).ToListAsync();
+            CandidateList = candList.Select(x => new CandidateDTO
+            {
+                Id = x.Id,  
+                Name = x.Name,
+                Email = x.Email,
+                Phone = x.Phone,
+                KeySkills = x.Skills,
+                FilePath = x.FilePath,
+                Rating = x.Rating,  
+
+            }).ToList();
+            ShowAdd = true;
+            OnPropertyChanged("ShowAdd");
+            OnPropertyChanged("CandidateList");
         }
 
     }

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace CRToolKit.DTO
 {
-    internal class CandidateDTO
+    public class CandidateDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
@@ -16,6 +17,7 @@ namespace CRToolKit.DTO
         public List<WorkHistoryDTO> WorkHistory { get; set; }
         public string Summary { get; set; }
         public string KeySkills { get; set; }
+        public string FilePath { get; set; }
     }
 
     public class WorkHistoryDTO

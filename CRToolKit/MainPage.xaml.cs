@@ -75,6 +75,7 @@ public partial class MainPage : ContentPage
         btnProcess.IsEnabled = false;
         processedFile = 0;
         errorFile = 0;
+        lblStatus.Text += " Started Processing...";
         foreach (var file in Directory.GetFiles(folderPath))
         {
             var candidate = await Process(file);
@@ -184,6 +185,8 @@ public partial class MainPage : ContentPage
             candidate.Email = candidateDTO.Email;
             candidate.Phone = candidateDTO.Phone;
             candidate.Skills = candidateDTO.KeySkills;
+            candidate.Rating = candidateDTO.Rating;
+            candidate.Modified = DateTime.Now;
 
             await App.Database.database.InsertAsync(candidate);
 
@@ -231,12 +234,15 @@ public partial class MainPage : ContentPage
             conversation.AppendUserInput(sbPrompt.ToString());
             var response = await SendRequestAsync();
             var skillArr = response.Split("\n");
+            var skills = string.Empty;
             if (skillArr.Count() > 1)
             {
+                skills = skillArr[1];
                 skillArr = skillArr[1].Split(",").Select(x => x.Trim().ToLower()).ToArray();
             }
             else
             {
+                skills = skillArr[0];
                 skillArr = skillArr[0].Split(",").Select(x => x.Trim().ToLower()).ToArray();
             }
             var primaySkill = pSkill.Text.Split(",").Select(x => x.Trim().ToLower()).ToArray();
@@ -244,6 +250,7 @@ public partial class MainPage : ContentPage
             var totCount = primaySkill.Count();
 
             var retCount = (int)Math.Ceiling(decimal.Parse(((((matchCount) * 5) / totCount)).ToString()));
+            candidate.KeySkills = skills;
             candidate.Rating =  retCount;
         }
         catch (Exception ex)

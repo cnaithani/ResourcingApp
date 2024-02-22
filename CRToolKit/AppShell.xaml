@@ -15,9 +15,9 @@
         <Tab Icon="list32.png"  Title="Candidates">
             <ShellContent  Title="Candidate List" ContentTemplate="{DataTemplate views:SimpleList}"/>
         </Tab>
-        <Tab Icon="notification32.png"  Title="Notifications">
-            <ShellContent  Title="Line Chart" ContentTemplate="{DataTemplate views:SimpleList}"/>
-        </Tab>
+        <!--<Tab Icon="notification32.png"  Title="Notifications">
+            <ShellContent  Title="Notifications" ContentTemplate="{DataTemplate views:SimpleList}"/>
+        </Tab>-->
         <Tab Icon="setting32.png"  Title="Settings">
             <ShellContent  Title="Settings" ContentTemplate="{DataTemplate views:AppSettings}"/>
         </Tab>
