@@ -13,136 +13,19 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System.Reflection.Metadata;
-using Microsoft.Maui.Graphics;
-using DocumentFormat.OpenXml.EMMA;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CRToolKit.Classes
 {
-    public class SimpleDocWriter : IDisposable
+    public class SimpleDocWriter 
     {
-        private MemoryStream _ms;
-        private WordprocessingDocument _wordprocessingDocument;
 
-        public SimpleDocWriter()
-        {
-            _ms = new MemoryStream();
-            _wordprocessingDocument = WordprocessingDocument.Create(_ms, WordprocessingDocumentType.Document);
-            var mainDocumentPart = _wordprocessingDocument.AddMainDocumentPart();
-            Body body = new Body();
-            mainDocumentPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document(body);
-        }
-
-        public void AddParagraph(string sentence)
-        {
-            List<Run> runList = ListOfStringToRunList(new List<string> { sentence });
-            AddParagraph(runList);
-        }
-        public void AddParagraph(List<string> sentences)
-        {
-            List<Run> runList = ListOfStringToRunList(sentences);
-            AddParagraph(runList);
-        }
-
-        public void AddParagraph(List<Run> runList)
-        {
-            var para = new Paragraph();
-            foreach (Run runItem in runList)
-            {
-                para.AppendChild(runItem);
-            }
-
-            Body body = _wordprocessingDocument.MainDocumentPart.Document.Body;
-            body.AppendChild(para);
-        }
-
-        public void AddBulletList(List<string> sentences)
-        {
-            var runList = ListOfStringToRunList(sentences);
-
-            AddBulletList(runList);
-        }
-
-
-        public void AddBulletList(List<Run> runList)
-        {
-            // Introduce bulleted numbering in case it will be needed at some point
-            NumberingDefinitionsPart numberingPart = _wordprocessingDocument.MainDocumentPart.NumberingDefinitionsPart;
-            if (numberingPart == null)
-            {
-                numberingPart = _wordprocessingDocument.MainDocumentPart.AddNewPart<NumberingDefinitionsPart>("NumberingDefinitionsPart001");
-                Numbering element = new Numbering();
-                element.Save(numberingPart);
-            }
-
-            // Insert an AbstractNum into the numbering part numbering list.  The order seems to matter or it will not pass the 
-            // Open XML SDK Productity Tools validation test.  AbstractNum comes first and then NumberingInstance and we want to
-            // insert this AFTER the last AbstractNum and BEFORE the first NumberingInstance or we will get a validation error.
-            var abstractNumberId = numberingPart.Numbering.Elements<AbstractNum>().Count() + 1;
-            var abstractLevel = new Level(new NumberingFormat() { Val = NumberFormatValues.Bullet }, new LevelText() { Val = "·" }) { LevelIndex = 0 };
-            var abstractNum1 = new AbstractNum(abstractLevel) { AbstractNumberId = abstractNumberId };
-
-            if (abstractNumberId == 1)
-            {
-                numberingPart.Numbering.Append(abstractNum1);
-            }
-            else
-            {
-                AbstractNum lastAbstractNum = numberingPart.Numbering.Elements<AbstractNum>().Last();
-                numberingPart.Numbering.InsertAfter(abstractNum1, lastAbstractNum);
-            }
-
-            // Insert an NumberingInstance into the numbering part numbering list.  The order seems to matter or it will not pass the 
-            // Open XML SDK Productity Tools validation test.  AbstractNum comes first and then NumberingInstance and we want to
-            // insert this AFTER the last NumberingInstance and AFTER all the AbstractNum entries or we will get a validation error.
-            var numberId = numberingPart.Numbering.Elements<NumberingInstance>().Count() + 1;
-            NumberingInstance numberingInstance1 = new NumberingInstance() { NumberID = numberId };
-            AbstractNumId abstractNumId1 = new AbstractNumId() { Val = abstractNumberId };
-            numberingInstance1.Append(abstractNumId1);
-
-            if (numberId == 1)
-            {
-                numberingPart.Numbering.Append(numberingInstance1);
-            }
-            else
-            {
-                var lastNumberingInstance = numberingPart.Numbering.Elements<NumberingInstance>().Last();
-                numberingPart.Numbering.InsertAfter(numberingInstance1, lastNumberingInstance);
-            }
-
-            Body body = _wordprocessingDocument.MainDocumentPart.Document.Body;
-
-            foreach (Run runItem in runList)
-            {
-                // Create items for paragraph properties
-                var numberingProperties = new NumberingProperties(new NumberingLevelReference() { Val = 0 }, new NumberingId() { Val = numberId });
-                var spacingBetweenLines1 = new SpacingBetweenLines() { After = "0" };  // Get rid of space between bullets
-                var indentation = new Indentation() { Left = "720", Hanging = "360" };  // correct indentation 
-
-                ParagraphMarkRunProperties paragraphMarkRunProperties1 = new ParagraphMarkRunProperties();
-                RunFonts runFonts1 = new RunFonts() { Ascii = "Symbol", HighAnsi = "Symbol" };
-                paragraphMarkRunProperties1.Append(runFonts1);
-
-                // create paragraph properties
-                var paragraphProperties = new ParagraphProperties(numberingProperties, spacingBetweenLines1, indentation, paragraphMarkRunProperties1);
-
-                // Create paragraph 
-                var newPara = new Paragraph(paragraphProperties);
-
-                // Add run to the paragraph
-                newPara.AppendChild(runItem);
-
-                // Add one bullet item to the body
-                body.AppendChild(newPara);
-            }
-        }
-
-        public void AddBulletListInPara(WordprocessingDocument document,Paragraph para, List<string> sentences, string searchtext)
+        public void AddBulletListInPara(WordprocessingDocument document, Paragraph para, List<string> sentences, string searchtext)
         {
             Body body = document.MainDocumentPart.Document.Body;
             Paragraph inserAfter = null;
 
-            foreach(var sentence in sentences)
+            foreach (var sentence in sentences)
             {
                 if (sentence.Contains("I'm sorry"))
                     continue;
@@ -156,75 +39,103 @@ namespace CRToolKit.Classes
 
                 var parent = inserAfter.Parent;
                 parent.InsertAfter(newPara, inserAfter);
-                inserAfter = newPara;   
+                inserAfter = newPara;
             }
             body.RemoveChild(para);
         }
 
-        public void ReplacePara(Paragraph para, string searchtext,string replacetext)
+        public void ReplacePara(Paragraph para, string searchtext, string replacetext)
         {
+            if (string.IsNullOrEmpty(replacetext))
+                return;
             if (replacetext.Contains("I'm sorry"))
                 return;
 
             para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
         }
 
-        public void Dispose()
+        public void RemovePara(WordprocessingDocument document, string searchtext)
         {
-            CloseAndDisposeOfDocument();
-            if (_ms != null)
+            MainDocumentPart mainpart = document.MainDocumentPart;
+            IEnumerable<OpenXmlElement> elems = mainpart.Document.Body.Descendants().ToList();
+
+            foreach (OpenXmlElement elem in elems)
             {
-                _ms.Dispose();
-                _ms = null;
+                if (elem is Text && elem.InnerText.Contains(searchtext))
+                {
+                    Run run = (Run)elem.Parent;
+                    Paragraph p = (Paragraph)run.Parent;
+                    p.RemoveAllChildren();
+                    p.Remove();
+                }
             }
         }
 
-        public MemoryStream SaveToStream()
+        public void RemoveEmptyLines(WordprocessingDocument document)
         {
-            _ms.Position = 0;
-            return _ms;
+            var body = document.MainDocumentPart.Document.Body;
+            var emptyParagraphs = body.Elements<Paragraph>();
+            bool previousWasEmpty = false;
+
+            foreach (var paragraph in emptyParagraphs.ToList())
+            {
+                if (IsEmptyParagraph(paragraph))
+                {
+                    if (previousWasEmpty)
+                    {
+                        paragraph.Remove();
+                    }
+                    else
+                    {
+                        previousWasEmpty = true;
+                    }
+                }
+                else
+                {
+                    previousWasEmpty = false;
+                }
+            }
+            document.MainDocumentPart.Document.Save();
         }
 
-        public void SaveToFile(string fileName)
+        internal void RemoveParagraphsContainingText(WordprocessingDocument doc, string text1, string text2)
         {
-            if (_wordprocessingDocument != null)
+            var body = doc.MainDocumentPart.Document.Body;
+            var paragraphs = body.Descendants<Run>().ToList();
+            Run previousParagraph = null;
+
+            foreach (var paragraph in paragraphs)
             {
-                CloseAndDisposeOfDocument();
+                if (IsParagraphContainingText(paragraph, text2))
+                {
+                    if (previousParagraph != null && IsParagraphContainingChar(previousParagraph, text1))
+                    {
+                        paragraph.Remove();
+                        previousParagraph.Remove();
+                        break;
+                    }
+
+                }
+                previousParagraph = paragraph;
             }
 
-            if (_ms == null)
-                throw new ArgumentException("This object has already been disposed of so you cannot save it!");
-
-            using (var fs = File.Create(fileName))
-            {
-                _ms.WriteTo(fs);
-            }
+            doc.MainDocumentPart.Document.Save();
         }
 
-        private void CloseAndDisposeOfDocument()
+        bool IsParagraphContainingText(Run paragraph, string searchText)
         {
-            if (_wordprocessingDocument != null)
-            {
-                //_wordprocessingDocument.;
-                _wordprocessingDocument.Dispose();
-                _wordprocessingDocument = null;
-            }
+            return paragraph.InnerText.Contains(searchText);
         }
 
-        private static List<Run> ListOfStringToRunList(List<string> sentences)
+        bool IsParagraphContainingChar(Run paragraph, string searchText)
         {
-            var runList = new List<Run>();
-            foreach (string item in sentences)
-            {
-                //var newRun = new Run(new RunProperties(
-                //    new RunStyle() { Val = "ListParagraph" },
-                //    new NoProof()), new Text(item));
-                var newRun = new Run();
-               newRun.AppendChild(new Text(item));
-                runList.Add(newRun);
-            }
-
-            return runList;
+            return paragraph.InnerXml.Contains(searchText);
         }
+
+        bool IsEmptyParagraph(Paragraph paragraph)
+        {
+            return paragraph != null && string.IsNullOrEmpty(paragraph.InnerText.Trim());
+        }
+
     }
 }

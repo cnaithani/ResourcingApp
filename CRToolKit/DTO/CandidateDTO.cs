@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace CRToolKit.DTO
     public class WorkHistoryDTO
     {
         public string Company { get; set; }
+        public string Employer {  get; set; }   
         public string Position { get; set; }
         public string Duration { get; set; }
         public string Location { get; set; }
@@ -39,5 +41,22 @@ namespace CRToolKit.DTO
         public string University { get; set; }
         public int Year { get; set; }
         public string Certification { get; set; }
+    }
+
+    public static class JSONTransformer
+    {
+        public static void Transform(CandidateDTO candidate)
+        {
+            if (candidate.WorkHistory.Count > 0)
+            {
+                foreach (var item in candidate.WorkHistory)
+                {
+                    if (string.IsNullOrEmpty(item.Company) && !string.IsNullOrEmpty(item.Employer)){
+                        item.Company = item.Employer;
+                    }
+                }
+            }
+
+        }
     }
 }

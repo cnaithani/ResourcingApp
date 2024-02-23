@@ -15,6 +15,7 @@ using Microsoft.Maui.Controls;
 using Newtonsoft.Json;
 using DocumentFormat.OpenXml.Drawing;
 using CRToolKit.Classes;
+using System.Text.RegularExpressions;
 
 namespace CRToolKit;
 
@@ -172,8 +173,10 @@ public partial class MainPage : ContentPage
             conversation.AppendUserInput(sbPrompt.ToString());
             var returnChat = await SendRequestAsync();
             returnChat = returnChat.Replace("```json", string.Empty).Replace("```", string.Empty);
+            returnChat = Regex.Replace(returnChat, "not provided", string.Empty, RegexOptions.IgnoreCase);
 
             var candidateDTO = JsonConvert.DeserializeObject<CandidateDTO>(returnChat);
+            JSONTransformer.Transform(candidateDTO);
             await GetWork(conversation, candidateDTO.WorkHistory);
             await GetRating(conversation, candidateDTO);
 
@@ -204,6 +207,27 @@ public partial class MainPage : ContentPage
         }
         return candidate;
     }
+
+    #region Get Data
+    private async System.Threading.Tasks.Task<string> SendRequestAsync()
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        Task<string> task = conversation.GetResponseFromChatbotAsync();
+        await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(Timeout.Infinite, cancellationTokenSource.Token));
+        cancellationTokenSource.Token.ThrowIfCancellationRequested();
+        return await task;
+    }
+    private String GetVal(string[] vals, string key, string seprator)
+    {
+        var keyStr = vals.Where(x => x.Contains(key + seprator)).FirstOrDefault();
+        if (String.IsNullOrEmpty(keyStr) || keyStr.ToLower().Contains("not provided"))
+            return string.Empty;
+
+        return keyStr.Split(seprator)[1].Trim();
+    }
+    #endregion
+
+    #region Process JSON Data
 
     async Task GetWork(Conversation chat, List<WorkHistoryDTO> workList)
     {
@@ -280,19 +304,10 @@ public partial class MainPage : ContentPage
         work.Summary = await SendRequestAsync();
     }
 
+    #endregion
 
-    CandidateDTO GetData(string[] candidateArr)
-    {
-        var candidateDTO = new CandidateDTO();
-        candidateDTO.Name = GetVal(candidateArr, "Name", seprator2);
-        candidateDTO.Email = GetVal(candidateArr, "Email", seprator2);
-        candidateDTO.Phone = GetVal(candidateArr, "Phone", seprator2);
-        candidateDTO.Address = GetVal(candidateArr, "Address", seprator2);
-        candidateDTO.Linkedin = GetVal(candidateArr, "Linkedin", seprator2);
 
-        return candidateDTO;
-    }
-
+    #region Create File
     String TransformFile(CandidateDTO candidate, string templateFilePath, string redultDirpath)
     {
         int ctr = 1;
@@ -327,11 +342,11 @@ public partial class MainPage : ContentPage
 
             TransformWorkHistory(candidate, wordDoc);
             TransformBasicInfo(candidate, wordDoc);
+            RemoveExtrachars(wordDoc);
 
             return targetFilePath;
         }
     }
-
     void TransformBasicInfo(CandidateDTO candidate, WordprocessingDocument doc)
     {       
         AddPara(doc, "NME", candidate.Name);
@@ -341,15 +356,15 @@ public partial class MainPage : ContentPage
         AddPara(doc, "DAWD", candidate.Address);
         AddPara(doc, "LNKIN", candidate.Linkedin);
         AddPara(doc, "SKLL", candidate.KeySkills.Replace(","," |"));
-    }
 
+        
+    }
     void AddPara(WordprocessingDocument doc, string varNama, string replaceChar)
     {
         var addPara = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(varNama)).FirstOrDefault();
         if (addPara != null)
             writer.ReplacePara(addPara, varNama, replaceChar);
     }
-
     void TransformWorkHistory(CandidateDTO candidate, WordprocessingDocument doc)
     {
 
@@ -385,129 +400,21 @@ public partial class MainPage : ContentPage
             para = durParas[ctr];
             writer.ReplacePara(para, dur + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Duration);
         }
-    }
 
-    private async System.Threading.Tasks.Task<string> SendRequestAsync()
+        writer.RemovePara(doc, desig);
+        writer.RemovePara(doc, summ);
+        writer.RemovePara(doc, com);
+        writer.RemovePara(doc, dur);
+    }
+    void RemoveExtrachars(WordprocessingDocument doc)
     {
-        var cancellationTokenSource = new CancellationTokenSource();
-        Task<string> task = conversation.GetResponseFromChatbotAsync();
-        await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(Timeout.Infinite, cancellationTokenSource.Token));
-        cancellationTokenSource.Token.ThrowIfCancellationRequested();
-        return await task;
+        writer.RemoveParagraphsContainingText(doc, "f07c", " LNKIN");
+        writer.RemoveEmptyLines(doc);
     }
+    #endregion
 
-    private String GetVal(string[] vals, string key, string seprator)
-    {
-        var keyStr = vals.Where(x => x.Contains(key + seprator)).FirstOrDefault();
-        if (String.IsNullOrEmpty(keyStr)|| keyStr.Contains("Not Provided"))
-            return string.Empty;
 
-        return keyStr.Split(seprator)[1].Trim();
-    }
+ 
 }
-
-
-
-/* Old Code
-     private async Task<Candidate> Process(string file)
-    {
-        Candidate candidate = new Candidate();
-        StringBuilder stringBuilder;
-        try
-        {
-            using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(file, false))
-            {
-                NameTable nameTable = new NameTable();
-                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
-                xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
-
-                string wordprocessingDocumentText;
-                using (StreamReader streamReader = new StreamReader(wordprocessingDocument.MainDocumentPart.GetStream()))
-                {
-                    wordprocessingDocumentText = streamReader.ReadToEnd();
-                }
-
-                stringBuilder = new StringBuilder(wordprocessingDocumentText.Length);
-
-                XmlDocument xmlDocument = new XmlDocument(nameTable);
-                xmlDocument.LoadXml(wordprocessingDocumentText);
-
-                XmlNodeList paragraphNodes = xmlDocument.SelectNodes("//w:p", xmlNamespaceManager);
-                foreach (XmlNode paragraphNode in paragraphNodes)
-                {
-                    XmlNodeList textNodes = paragraphNode.SelectNodes(".//w:t | .//w:tab | .//w:br", xmlNamespaceManager);
-                    foreach (XmlNode textNode in textNodes)
-                    {
-                        switch (textNode.Name)
-                        {
-                            case "w:t":
-                                stringBuilder.Append(textNode.InnerText);
-                                break;
-
-                            case "w:tab":
-                                stringBuilder.Append("\t");
-                                break;
-
-                            case "w:br":
-                                stringBuilder.Append("\v");
-                                break;
-                        }
-                    }
-
-                    stringBuilder.Append(Environment.NewLine);
-                }
-            }
-
-            var txt = stringBuilder.ToString();
-
-            var sbPrompt = new StringBuilder();
-            var sbSystemMsg = new StringBuilder();
-            sbPrompt.AppendLine("text:Following is text retrived from a resume - ");
-            sbPrompt.AppendLine(txt);
-            sbPrompt.AppendLine("question_to_ask: Provide following information - ");
-            sbPrompt.AppendLine("Name");
-            sbPrompt.AppendLine("Email");
-            sbPrompt.AppendLine("Phone");
-            sbPrompt.AppendLine("Qualification");
-            sbPrompt.AppendLine("Work History");
-            sbPrompt.AppendLine("Summary");
-
-            sbSystemMsg.AppendLine("Desired format:");
-            sbSystemMsg.AppendLine(string.Concat("Name", seprator2, "James Collingwood"));
-            sbSystemMsg.Append(seprator1);
-            sbSystemMsg.AppendLine(string.Concat("Email", seprator2, "james.collingwood@gmail.com"));
-            sbSystemMsg.Append(seprator1);
-            sbSystemMsg.AppendLine(string.Concat("Phone", seprator2, "703-561-2213"));
-            sbSystemMsg.Append(seprator1);
-            sbSystemMsg.AppendLine(string.Concat("Qualification", seprator2, "Degree", seprator5, "B.A", seprator4, " Percentage", seprator5, " 59%", seprator4, " University", seprator5, "Osaka State University", seprator3));
-            sbSystemMsg.Append(seprator1);
-            sbSystemMsg.AppendLine(string.Concat("Work History", seprator2, "Company", seprator5, " ABC Ltd.", seprator4, " Designation", seprator5, " Sr. Software Engineer", seprator4, " Period", seprator5, " May, 2005 - June, 2008", seprator4));
-            sbSystemMsg.AppendLine(string.Concat("Work History", seprator2, "Company", seprator5, " Microsoft INC Ltd.", seprator4, " Designation", seprator5, " Sr. Engineering Manager", seprator4, " Period", seprator5, " June, 2008 - August, 2009", seprator4));
-            sbSystemMsg.Append(seprator1);
-            sbSystemMsg.AppendLine(string.Concat("Summary" , seprator2, "17+ years of Experience in designing and developing applications using Microsoft Technology Stack (C#, VB.Net,.Net, .Net Core, ASP.Net MVC, ASP.Net, SQL Server) , Javascript Frameworks(Angular, D3JS) and Cloud (Azure)"));
-
-            conversation = ChatGPT.CreateConversation();
-            conversation.AppendUserInput(sbPrompt.ToString());
-            conversation.AppendSystemMessage(sbSystemMsg.ToString());
-            var returnChat = (await SendRequestAsync()).Split(seprator1);
-
-            var candidateDTO = GetData(returnChat);
-
-            //Get local template file path from config
-            var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
-            var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString(); ;
-
-            candidate.FilePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
-
-            await Task.Delay(waitMillisecond);
-
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        return candidate;
-    }
- */
 
 
