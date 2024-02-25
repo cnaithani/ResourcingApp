@@ -101,7 +101,7 @@ public partial class MainPage : ContentPage
 
     private async Task<Candidate> Process(string file)
     {
-        TRYAGAIN:
+    TRYAGAIN:
 
         Candidate candidate = new Candidate();
         StringBuilder stringBuilder;
@@ -251,7 +251,7 @@ public partial class MainPage : ContentPage
 
     async Task GetRating(Conversation chat, CandidateDTO candidate)
     {
-        TRYAGAIN:
+    TRYAGAIN:
         try
         {
             var replace1 = "The primary skills of the candidate are:";
@@ -261,7 +261,7 @@ public partial class MainPage : ContentPage
             sbPrompt.AppendLine("Return answer as comma saprated string ");
             conversation.AppendUserInput(sbPrompt.ToString());
             var response = await SendRequestAsync();
-            var skillArr = response.Replace(replace1,string.Empty).Split("\n");
+            var skillArr = response.Replace(replace1, string.Empty).Split("\n");
             var skills = string.Empty;
             if (skillArr.Count() > 1)
             {
@@ -279,7 +279,7 @@ public partial class MainPage : ContentPage
 
             var retCount = (int)Math.Ceiling(decimal.Parse(((((matchCount) * 5) / totCount)).ToString()));
             candidate.KeySkills = skills;
-            candidate.Rating =  retCount;
+            candidate.Rating = retCount;
         }
         catch (Exception ex)
         {
@@ -287,7 +287,7 @@ public partial class MainPage : ContentPage
             {
                 await Task.Delay(waitMillisecond);
                 goto TRYAGAIN;
-                
+
             }
             candidate.Rating = 0;
         }
@@ -302,6 +302,11 @@ public partial class MainPage : ContentPage
         sbPrompt.AppendLine(string.Concat("Please tell bullet point summary of candidate's work in ", work.Company, " during ", tenure));
         conversation.AppendUserInput(sbPrompt.ToString());
         work.Summary = await SendRequestAsync();
+        if (!string.IsNullOrEmpty(work.Summary) && (work.Summary.ToLower().Contains("not provided") || work.Summary.ToLower().Contains("i cannot provide")))
+        {
+            work.Summary = string.Empty;
+            //TODO: Log issue - High
+        }
     }
 
     #endregion
@@ -339,25 +344,24 @@ public partial class MainPage : ContentPage
             {
                 throw new ArgumentNullException("MainDocumentPart and/or Body is null.");
             }
-
-            TransformWorkHistory(candidate, wordDoc);
+            
             TransformBasicInfo(candidate, wordDoc);
+            TransformWorkHistory(candidate, wordDoc);
+            TransformQual(candidate, wordDoc);
             RemoveExtrachars(wordDoc);
 
             return targetFilePath;
         }
     }
     void TransformBasicInfo(CandidateDTO candidate, WordprocessingDocument doc)
-    {       
+    {
         AddPara(doc, "NME", candidate.Name);
         AddPara(doc, "EML", candidate.Email);
         AddPara(doc, "MOB", candidate.Phone);
         AddPara(doc, "SUMM", candidate.Summary);
         AddPara(doc, "DAWD", candidate.Address);
         AddPara(doc, "LNKIN", candidate.Linkedin);
-        AddPara(doc, "SKLL", candidate.KeySkills.Replace(","," |"));
-
-        
+        AddPara(doc, "SKLL", candidate.KeySkills.Replace(",", " |"));
     }
     void AddPara(WordprocessingDocument doc, string varNama, string replaceChar)
     {
@@ -406,6 +410,53 @@ public partial class MainPage : ContentPage
         writer.RemovePara(doc, com);
         writer.RemovePara(doc, dur);
     }
+    void TransformQual(CandidateDTO candidate, WordprocessingDocument doc)
+    {
+
+        var replacement1 = "QUNV";
+        var replacement2 = "QADD";
+        var replacement3 = "QDEGREE";
+        var replacement4 = "QDATE";
+        int ctrWork = candidate.Qualification.Count;
+        var writer = new SimpleDocWriter();
+
+        //Repeace work Summs
+        var replacementParas1 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement2)).ToList();
+        var replacementParas2 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement1)).ToList();
+        var replacementParas3 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement3)).ToList();
+        var replacementParas4 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement4)).ToList();
+
+        for (int ctr = 0; ctr < ctrWork; ctr++)
+        {
+            var para = replacementParas2[ctr];
+            writer.ReplacePara(para, replacement1 + (ctr + 1).ToString(), candidate.Qualification[ctr].University);
+
+            para = replacementParas2[ctr];
+            writer.ReplacePara(para, replacement1 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location);
+
+            para = replacementParas3[ctr];
+            writer.ReplacePara(para, replacement3 + (ctr + 1).ToString(), candidate.Qualification[ctr].Degree);
+
+            para = replacementParas4[ctr];
+            writer.ReplacePara(para, replacement4 + (ctr + 1).ToString(), candidate.Qualification[ctr].DisplayDate);
+        }
+
+        writer.RemovePara(doc, replacement1);
+        writer.RemovePara(doc, replacement2);
+        writer.RemovePara(doc, replacement3);
+        writer.RemovePara(doc, replacement4);
+    }
+    //void ReplacePara(CandidateDTO candidate, WordprocessingDocument doc, string replacementChar, string searchChar)
+    //{
+    //    int ctrWork = candidate.Qualification.Count;
+    //    var replaceParas = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement1)).ToList();
+    //    for (int ctr = 0; ctr < ctrWork; ctr++)
+    //    {
+    //        var para = replaceParas[ctr];
+    //        writer.ReplacePara(para, searchChar, replacementChar);
+    //    }
+    //}
+
     void RemoveExtrachars(WordprocessingDocument doc)
     {
         writer.RemoveParagraphsContainingText(doc, "f07c", " LNKIN");
@@ -414,7 +465,7 @@ public partial class MainPage : ContentPage
     #endregion
 
 
- 
+
 }
 
 
