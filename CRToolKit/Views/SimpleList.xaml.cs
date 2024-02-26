@@ -10,9 +10,19 @@ public partial class SimpleList : ContentPage
         InitializeComponent();       
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
-        currentVM = new List1VM();
-        BindingContext = currentVM;
+        if (currentVM == null)
+        {
+            currentVM = new List1VM();
+            BindingContext = currentVM;
+        }
+        this.isLoadig.IsRunning = true;
+        candidateList.IsVisible = false;
+        await currentVM.PopulateCandidates();
+        this.isLoadig.IsRunning = false;
+        candidateList.IsVisible = true;
+
+
     }
 }

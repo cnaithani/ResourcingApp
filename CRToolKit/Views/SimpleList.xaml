@@ -4,7 +4,8 @@
              x:Class="CRToolKit.Views.SimpleList"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}">
     <StackLayout VerticalOptions="FillAndExpand">
-        <StackLayout VerticalOptions="StartAndExpand">
+        <ActivityIndicator x:Name="isLoadig" IsRunning="True" Color="Orange" />
+        <StackLayout x:Name="candidateList" IsVisible="false"  VerticalOptions="StartAndExpand">
             <ScrollView Margin="0,10,0,0" VerticalOptions="FillAndExpand" VerticalScrollBarVisibility="Default">
                 <ListView   BackgroundColor="Transparent"
                         ItemsSource="{Binding CandidateList}"

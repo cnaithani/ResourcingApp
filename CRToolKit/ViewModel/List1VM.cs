@@ -3,14 +3,15 @@ using CRToolKit.DTO;
 using CRToolKit.Models;
 using System.Linq;
 using CRToolKit.ViewModel;
+using CommunityToolkit.Maui.Core.Views;
 
 namespace CRToolKit.Views
 {
 	public class List1VM:BaseViewModel
 	{
-        public List1VM()
+        public  List1VM()
         {
-            PopulateCandidates();
+            
         }
 
         public List<CandidateDTO> CandidateList { get; set; }
@@ -47,20 +48,27 @@ namespace CRToolKit.Views
             OnPropertyChanged("ShowAdd");
         }
 
-        private async void PopulateCandidates()
+        public async Task PopulateCandidates()
         {
-            var candList = await App.Database.database.Table<Candidate>().OrderByDescending(x=>x.Modified).ToListAsync();
-            CandidateList = candList.Select(x => new CandidateDTO
+            try
             {
-                Id = x.Id,  
-                Name = x.Name,
-                Email = x.Email,
-                Phone = x.Phone,
-                KeySkills = x.Skills,
-                FilePath = x.FilePath,
-                Rating = x.Rating,  
+                var candList = await App.Database.database.Table<Candidate>().OrderByDescending(x => x.Modified).Take(10).ToListAsync();
+                CandidateList = candList.Select(x => new CandidateDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    KeySkills = x.Skills,
+                    FilePath = x.FilePath,
+                    Rating = x.Rating,
 
-            }).ToList();
+                }).ToList();
+            }
+            catch(Exception e)
+            {
+                var srr = e.Message; 
+            }
             ShowAdd = true;
             OnPropertyChanged("ShowAdd");
             OnPropertyChanged("CandidateList");
