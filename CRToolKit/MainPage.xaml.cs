@@ -257,7 +257,7 @@ public partial class MainPage : ContentPage
             var replace1 = "The primary skills of the candidate are:";
 
             var sbPrompt = new StringBuilder();
-            sbPrompt.AppendLine(string.Concat("Please tell primary skills of candidate "));
+            sbPrompt.AppendLine(string.Concat("Please tell CORE COMPETENCIES of candidate "));
             sbPrompt.AppendLine("Return answer as comma saprated string ");
             conversation.AppendUserInput(sbPrompt.ToString());
             var response = await SendRequestAsync();
@@ -421,18 +421,18 @@ public partial class MainPage : ContentPage
         var writer = new SimpleDocWriter();
 
         //Repeace work Summs
-        var replacementParas1 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement2)).ToList();
-        var replacementParas2 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement1)).ToList();
+        var replacementParas1 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement1)).ToList();
+        var replacementParas2 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement2)).ToList();
         var replacementParas3 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement3)).ToList();
         var replacementParas4 = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement4)).ToList();
 
         for (int ctr = 0; ctr < ctrWork; ctr++)
         {
-            var para = replacementParas2[ctr];
+            var para = replacementParas1[ctr];
             writer.ReplacePara(para, replacement1 + (ctr + 1).ToString(), candidate.Qualification[ctr].University);
 
             para = replacementParas2[ctr];
-            writer.ReplacePara(para, replacement1 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location);
+            writer.ReplacePara(para, replacement2 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location);
 
             para = replacementParas3[ctr];
             writer.ReplacePara(para, replacement3 + (ctr + 1).ToString(), candidate.Qualification[ctr].Degree);
