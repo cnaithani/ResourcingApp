@@ -37,8 +37,8 @@ namespace CRToolKit.Data
         }
         internal async void UpgradeFrom1To2()
         {
-            await App.Database.database.CreateTableAsync<Product>();
-            await App.Database.database.CreateTableAsync<ProductImages>();
+            //await App.Database.database.CreateTableAsync<Product>();
+            //await App.Database.database.CreateTableAsync<ProductImages>();
             await App.Database.database.CreateTableAsync<Candidate>();
         }
     }
