@@ -19,7 +19,7 @@
             <ShellContent  Title="Notifications" ContentTemplate="{DataTemplate views:SimpleList}"/>
         </Tab>-->
         <Tab Icon="setting32.png"  Title="Settings">
-            <ShellContent ContentTemplate="{DataTemplate views:AppSettings}"/>
+            <ShellContent  Title="Settings" ContentTemplate="{DataTemplate views:AppSettings}"/>
         </Tab>
     </TabBar>
 
