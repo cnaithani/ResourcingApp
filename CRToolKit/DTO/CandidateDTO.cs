@@ -43,6 +43,7 @@ namespace CRToolKit.DTO
         public string Certification { get; set; }
         public string Field { get; set; }
         public string University { get; set; }
+        public string College { get; set; }
         public string Month { get; set; }
         public string Year { get; set; }
         public string Location { get; set; }

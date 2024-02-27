@@ -13,7 +13,8 @@ using System.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection.Metadata;
+
 
 namespace CRToolKit.Classes
 {
@@ -52,6 +53,32 @@ namespace CRToolKit.Classes
                 return;
 
             para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
+            var textRuns = para.Descendants<Text>().ToList();
+            foreach (var textRun in textRuns)
+            {
+                textRun.Space = SpaceProcessingModeValues.Preserve;
+            }
+        }
+
+        public void ReplacePara(WordprocessingDocument document, Paragraph para, string searchtext, string replacetext, string previosText, int space)
+        {
+            if (string.IsNullOrEmpty(replacetext))
+                return;
+            if (replacetext.Contains("I'm sorry"))
+                return;
+
+            space = space - previosText.Length;
+            if (space < 1) space = 1;
+            replacetext =  new string(' ', space) + replacetext;
+            para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
+
+            var textRuns = para.Descendants<Text>().ToList();
+            foreach (var textRun in textRuns)
+            {
+                textRun.Space = SpaceProcessingModeValues.Preserve;
+            }
+            document.Save();
+
         }
 
         public void RemovePara(WordprocessingDocument document, string searchtext)

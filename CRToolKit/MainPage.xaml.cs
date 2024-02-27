@@ -159,8 +159,23 @@ public partial class MainPage : ContentPage
             sbPrompt.AppendLine("\"Name\" <string>");
             sbPrompt.AppendLine("\"Email\" <string>");
             sbPrompt.AppendLine("\"Phone\" <string>");
-            sbPrompt.AppendLine("\"Qualification\" [{}]");
-            sbPrompt.AppendLine("\"WorkHistory\" [{}]");
+            sbPrompt.AppendLine("\"Qualification\"");
+            sbPrompt.AppendLine("[{");
+            sbPrompt.AppendLine("\"Degree\" <string>");
+            sbPrompt.AppendLine("\"Certification\" <string>");
+            sbPrompt.AppendLine("\"University\" <string>");
+            sbPrompt.AppendLine("\"College\" <string>");
+            sbPrompt.AppendLine("\"Month\" <string>");
+            sbPrompt.AppendLine("\"Year\" <string>");
+            sbPrompt.AppendLine("\"Location\" <string>");
+            sbPrompt.AppendLine("}]");
+            sbPrompt.AppendLine("\"WorkHistory\"");
+            sbPrompt.AppendLine("[{");
+            sbPrompt.AppendLine("\"Company\" <string>");
+            sbPrompt.AppendLine("\"Position\" <string>");
+            sbPrompt.AppendLine("\"Duration\" <string>");
+            sbPrompt.AppendLine("\"Location\" <string>");
+            sbPrompt.AppendLine("}]");
             sbPrompt.AppendLine("\"Summary\" <string>");
             sbPrompt.AppendLine("\"Address\" <string>");
             sbPrompt.AppendLine("\"Linkedin\" <string>");
@@ -402,7 +417,7 @@ public partial class MainPage : ContentPage
             writer.ReplacePara(para, com + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Company);
 
             para = durParas[ctr];
-            writer.ReplacePara(para, dur + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Duration);
+            writer.ReplacePara(doc,para, dur + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Duration, candidate.WorkHistory[ctr].Position, 130);
         }
 
         writer.RemovePara(doc, desig);

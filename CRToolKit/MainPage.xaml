@@ -25,7 +25,7 @@
         <Entry x:Name="pSkill" Text="Software Engineering,C#, SQL Server, Javascript, Angular"></Entry>
         <Label Text="Select Folder for Processing:" HorizontalOptions="Center" Margin="0,20,0,0"/>
         <ImageButton Grid.Column="1"  VerticalOptions="Start" HorizontalOptions="Center" HeightRequest="50" WidthRequest="50" 
-            Source="folder.png"  BackgroundColor="Transparent" Aspect="Center"
+            Source="folder.png"  Aspect="Center"
             Clicked="btnBrowse_Clicked">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
