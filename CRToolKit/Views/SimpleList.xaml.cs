@@ -20,9 +20,11 @@ public partial class SimpleList : ContentPage
         this.isLoadig.IsRunning = true;
         candidateList.IsVisible = false;
         await currentVM.PopulateCandidates();
-        this.isLoadig.IsRunning = false;
         candidateList.IsVisible = true;
+    }
 
-
+    private void ListView_Loaded(object sender, EventArgs e)
+    {
+        this.isLoadig.IsRunning = false;
     }
 }
