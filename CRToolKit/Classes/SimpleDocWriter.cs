@@ -43,6 +43,13 @@ namespace CRToolKit.Classes
                 inserAfter = newPara;
             }
             body.RemoveChild(para);
+
+            var textRuns = para.Descendants<Text>().ToList();
+            foreach (var textRun in textRuns)
+            {
+                textRun.Space = SpaceProcessingModeValues.Preserve;
+            }
+            document.Save();
         }
 
         public void ReplacePara(Paragraph para, string searchtext, string replacetext)
@@ -53,11 +60,6 @@ namespace CRToolKit.Classes
                 return;
 
             para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
-            var textRuns = para.Descendants<Text>().ToList();
-            foreach (var textRun in textRuns)
-            {
-                textRun.Space = SpaceProcessingModeValues.Preserve;
-            }
         }
 
         public void ReplacePara(WordprocessingDocument document, Paragraph para, string searchtext, string replacetext, string previosText, int space)

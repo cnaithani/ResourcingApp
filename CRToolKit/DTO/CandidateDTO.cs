@@ -23,6 +23,7 @@ namespace CRToolKit.DTO
         public List<WorkHistoryDTO> WorkHistory { get; set; }
         public string Summary { get; set; }
         public string KeySkills { get; set; }
+        public string[] Headlines { get; set; }
         public string FilePath { get; set; }
     }
 

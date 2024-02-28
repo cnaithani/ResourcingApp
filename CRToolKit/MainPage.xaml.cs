@@ -194,6 +194,7 @@ public partial class MainPage : ContentPage
             JSONTransformer.Transform(candidateDTO);
             await GetWork(conversation, candidateDTO.WorkHistory);
             await GetRating(conversation, candidateDTO);
+            await GetResumeHeadlines(conversation, candidateDTO);
 
             //Get local template file path from config
             var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
@@ -269,10 +270,10 @@ public partial class MainPage : ContentPage
     TRYAGAIN:
         try
         {
-            var replace1 = "The primary skills of the candidate are:";
+            var replace1 = "The primary core competencies of the candidate are:";
 
             var sbPrompt = new StringBuilder();
-            sbPrompt.AppendLine(string.Concat("Please tell CORE COMPETENCIES of candidate "));
+            sbPrompt.AppendLine(string.Concat("Please tell core competencies of candidate "));
             sbPrompt.AppendLine("Return answer as comma saprated string ");
             conversation.AppendUserInput(sbPrompt.ToString());
             var response = await SendRequestAsync();
@@ -302,9 +303,44 @@ public partial class MainPage : ContentPage
             {
                 await Task.Delay(waitMillisecond);
                 goto TRYAGAIN;
-
             }
             candidate.Rating = 0;
+        }
+    }
+
+    async Task GetResumeHeadlines(Conversation chat, CandidateDTO candidate)
+    {
+    TRYAGAIN:
+        try
+        {
+            var replace1 = "The resume headlines of the candidate are:";
+            var sbPrompt = new StringBuilder();
+            sbPrompt.AppendLine(string.Concat("Please suggest atleat 4 short resume headlines - "));
+            sbPrompt.AppendLine("Return answer as comma saprated string. Headline should be maximum 4 words. Use title case for each headline. ");
+            conversation.AppendUserInput(sbPrompt.ToString());
+            conversation.AppendSystemMessage("Example - Reliability Engineer, Mechanical Engineering, Root Cause Analysis, Team Supervision");
+            var response = await SendRequestAsync();
+            var headlineArr = response.Replace(replace1, string.Empty).Split("\n");
+            var headlines = string.Empty;
+            if (headlineArr.Count() > 1)
+            {
+                headlines = headlineArr[1];
+                headlineArr = headlineArr[1].Split(",").Select(x => x.Trim().ToLower()).ToArray();
+            }
+            else
+            {
+                headlines = headlineArr[0];
+                headlineArr = headlineArr[0].Split(",").Select(x => x.Trim().ToLower()).ToArray();
+            }
+            candidate.Headlines = headlineArr;
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("TooManyRequests"))
+            {
+                await Task.Delay(waitMillisecond);
+                goto TRYAGAIN;
+            }
         }
     }
 
@@ -377,6 +413,10 @@ public partial class MainPage : ContentPage
         AddPara(doc, "DAWD", candidate.Address);
         AddPara(doc, "LNKIN", candidate.Linkedin);
         AddPara(doc, "SKLL", candidate.KeySkills.Replace(",", " |"));
+        if (candidate.Headlines != null && candidate.Headlines.Count() >0) AddPara(doc, "RHL1", System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(candidate.Headlines[0].ToLower()));
+        if (candidate.Headlines != null && candidate.Headlines.Count() > 1) AddPara(doc, "RHL2", System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(candidate.Headlines[1].ToLower()));
+        if (candidate.Headlines != null && candidate.Headlines.Count() > 2) AddPara(doc, "RHL3", System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(candidate.Headlines[2].ToLower()));
+        if (candidate.Headlines != null && candidate.Headlines.Count() > 3) AddPara(doc, "RHL4", System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(candidate.Headlines[3].ToLower()));
     }
     void AddPara(WordprocessingDocument doc, string varNama, string replaceChar)
     {
