@@ -1,8 +1,8 @@
-﻿using CRToolKit.Data;
-using CRToolKit.Interfaces;
+﻿using ResourcingToolKit.Data;
+using ResourcingToolKit.Interfaces;
 using System.Threading;
 
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 public partial class App : Application
 {

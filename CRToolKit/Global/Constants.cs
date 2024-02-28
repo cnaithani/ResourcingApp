@@ -1,5 +1,5 @@
 ﻿using System;
-namespace CRToolKit.Global
+namespace ResourcingToolKit.Global
 {
 	public static class Constants
 	{

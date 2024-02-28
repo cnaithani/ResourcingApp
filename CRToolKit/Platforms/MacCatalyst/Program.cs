@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 public class Program
 {

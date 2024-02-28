@@ -1,11 +1,11 @@
 ﻿using System;
-using CRToolKit.DTO;
-using CRToolKit.Models;
+using ResourcingToolKit.DTO;
+using ResourcingToolKit.Models;
 using System.Linq;
-using CRToolKit.ViewModel;
+using ResourcingToolKit.ViewModel;
 using CommunityToolkit.Maui.Core.Views;
 
-namespace CRToolKit.Views
+namespace ResourcingToolKit.Views
 {
 	public class List1VM:BaseViewModel
 	{

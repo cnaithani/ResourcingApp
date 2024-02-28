@@ -1,8 +1,8 @@
 ﻿using System;
-using CRToolKit.DTO;
-using CRToolKit.Models;
+using ResourcingToolKit.DTO;
+using ResourcingToolKit.Models;
 
-namespace CRToolKit.ViewModel
+namespace ResourcingToolKit.ViewModel
 {
 	public class GridViewListVM:BaseViewModel
 	{

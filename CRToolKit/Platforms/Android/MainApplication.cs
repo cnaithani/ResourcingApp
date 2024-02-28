@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 [Application]
 public class MainApplication : MauiApplication

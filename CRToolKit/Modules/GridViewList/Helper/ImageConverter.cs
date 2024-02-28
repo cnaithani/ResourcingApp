@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace CRToolKit.Modules.GridViewList.Helper
+namespace ResourcingToolKit.Modules.GridViewList.Helper
 {
 	public class ImageConverter : IValueConverter
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-namespace CRToolKit.Interfaces
+namespace ResourcingToolKit.Interfaces
 {
 	public interface ICommonDeviceHelper
 	{

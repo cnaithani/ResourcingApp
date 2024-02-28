@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Storage;
-using CRToolKit.Interfaces;
+using ResourcingToolKit.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using System.Reflection;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 public static class MauiProgram
 {
@@ -32,7 +32,7 @@ public static class MauiProgram
 
 
         var asmb = Assembly.GetExecutingAssembly();
-        using var stream = asmb.GetManifestResourceStream("CRToolKit.appsettings.json");
+        using var stream = asmb.GetManifestResourceStream("ResourcingToolKit.appsettings.json");
 
         var config = new ConfigurationBuilder()
                     .AddJsonStream(stream)

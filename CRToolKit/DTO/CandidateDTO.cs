@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace CRToolKit.DTO
+namespace ResourcingToolKit.DTO
 {
     public class CandidateDTO
     {

@@ -16,7 +16,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using System.Reflection.Metadata;
 
 
-namespace CRToolKit.Classes
+namespace ResourcingToolKit.Classes
 {
     public class SimpleDocWriter 
     {

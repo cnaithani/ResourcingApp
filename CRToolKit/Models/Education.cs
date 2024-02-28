@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRToolKit.Models
+namespace ResourcingToolKit.Models
 {
     internal class Education
     {

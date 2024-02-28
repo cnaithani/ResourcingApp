@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <controls:ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="http://schemas.microsoft.com/dotnet/2021/maui"
-             x:Class="CRToolKit.Views.SimpleList"
+             x:Class="ResourcingToolKit.Views.SimpleList"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}">
     <StackLayout VerticalOptions="StartAndExpand">
         <StackLayout x:Name="candidateList" IsVisible="false"  VerticalOptions="StartAndExpand">
-            <ScrollView Margin="0,10,0,0" MinimumHeightRequest="400"
-                        VerticalOptions="FillAndExpand" VerticalScrollBarVisibility="Default">
+            <ScrollView Margin="0,10,0,0" HeightRequest="360"
+                        VerticalOptions="StartAndExpand" VerticalScrollBarVisibility="Default">
                 <ListView   BackgroundColor="Transparent" Loaded="ListView_Loaded" 
                         ItemsSource="{Binding CandidateList}"
                         SeparatorVisibility="None"

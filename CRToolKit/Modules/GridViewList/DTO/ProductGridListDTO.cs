@@ -1,5 +1,5 @@
 ﻿using System;
-namespace CRToolKit.DTO
+namespace ResourcingToolKit.DTO
 {
 	public class ProductGridListDTO
 	{

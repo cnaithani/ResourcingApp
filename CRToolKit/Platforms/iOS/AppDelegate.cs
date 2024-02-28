@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

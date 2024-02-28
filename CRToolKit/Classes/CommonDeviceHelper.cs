@@ -1,7 +1,7 @@
 ﻿using System;
-using CRToolKit.Interfaces;
+using ResourcingToolKit.Interfaces;
 
-namespace CRToolKit
+namespace ResourcingToolKit
 {
     public class CommonDeviceHelper : ICommonDeviceHelper
     {

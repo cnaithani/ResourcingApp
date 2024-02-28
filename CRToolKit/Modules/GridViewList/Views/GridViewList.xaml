@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ListView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-             x:Class="CRToolKit.Views.GridViewList"
+             x:Class="ResourcingToolKit.Views.GridViewList"
              Title="Grid View">
     <StackLayout>
         

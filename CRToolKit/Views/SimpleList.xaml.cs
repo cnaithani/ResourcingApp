@@ -1,13 +1,13 @@
-﻿using CRToolKit.Models;
+﻿using ResourcingToolKit.Models;
 
-namespace CRToolKit.Views;
+namespace ResourcingToolKit.Views;
 
 public partial class SimpleList : ContentPage
 {
-	public List1VM currentVM;
-	public SimpleList()
-	{
-        InitializeComponent();       
+    public List1VM currentVM;
+    public SimpleList()
+    {
+        InitializeComponent();
     }
 
     protected override async void OnAppearing()
@@ -17,11 +17,14 @@ public partial class SimpleList : ContentPage
             currentVM = new List1VM();
             BindingContext = currentVM;
         }
+
         this.isLoadig.IsRunning = true;
         candidateList.IsVisible = false;
         await currentVM.PopulateCandidates();
         candidateList.IsVisible = true;
     }
+
+
 
     private void ListView_Loaded(object sender, EventArgs e)
     {

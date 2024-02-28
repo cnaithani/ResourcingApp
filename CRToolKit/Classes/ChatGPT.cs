@@ -12,7 +12,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace CRToolKit
+namespace ResourcingToolKit
 {
     /// <summary>
     /// Static class containing methods for interacting with the ChatGPT API.

@@ -1,7 +1,7 @@
 ﻿using System;
 using SQLite;
 
-namespace CRToolKit.Data
+namespace ResourcingToolKit.Data
 {
 	public class AppDatabase
 	{

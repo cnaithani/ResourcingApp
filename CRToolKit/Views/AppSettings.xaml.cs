@@ -1,6 +1,6 @@
-﻿using CRToolKit.ViewModel;
+﻿using ResourcingToolKit.ViewModel;
 
-namespace CRToolKit.Views;
+namespace ResourcingToolKit.Views;
 
 public partial class AppSettings : ContentPage
 {

@@ -1,4 +1,4 @@
-﻿namespace CRToolKit;
+﻿namespace ResourcingToolKit;
 
 public partial class AppShell : Shell
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-namespace CRToolKit.Models
+namespace ResourcingToolKit.Models
 {
 	public class ProductImages
 	{

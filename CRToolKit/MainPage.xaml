@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CRToolKit.MainPage">
+             x:Class="ResourcingToolKit.MainPage">
 
     <!--<StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="Center">
         <Label Text="Select Folder for Processing:"/>

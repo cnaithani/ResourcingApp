@@ -2,7 +2,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 class Program : MauiApplication
 {

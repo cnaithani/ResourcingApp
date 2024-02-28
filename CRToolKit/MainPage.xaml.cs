@@ -7,17 +7,17 @@ using OpenAI_API.Chat;
 using System.Text;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using CRToolKit.Models;
-using CRToolKit.DTO;
+using ResourcingToolKit.Models;
+using ResourcingToolKit.DTO;
 using System.Runtime.ConstrainedExecution;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Maui.Controls;
 using Newtonsoft.Json;
 using DocumentFormat.OpenXml.Drawing;
-using CRToolKit.Classes;
+using ResourcingToolKit.Classes;
 using System.Text.RegularExpressions;
 
-namespace CRToolKit;
+namespace ResourcingToolKit;
 
 public partial class MainPage : ContentPage
 {

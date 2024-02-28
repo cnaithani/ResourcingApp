@@ -1,7 +1,7 @@
 ﻿using System;
-using CRToolKit.Models;
+using ResourcingToolKit.Models;
 
-namespace CRToolKit.Data
+namespace ResourcingToolKit.Data
 {
     public class DatabaseUpdates
     {

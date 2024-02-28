@@ -6,17 +6,17 @@
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
 		<OutputType>Exe</OutputType>
-		<RootNamespace>CRToolKit</RootNamespace>
+		<RootNamespace>ResourcingToolKit</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<MauiVersion>8.0.3</MauiVersion>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Display name -->
-		<ApplicationTitle>CRToolKit</ApplicationTitle>
+		<ApplicationTitle>ResourcingToolKit</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.crtoolkit</ApplicationId>
+		<ApplicationId>com.companyname.resourcingtoolkit</ApplicationId>
 		<ApplicationIdGuid>e1c8cb76-301d-4495-b8fe-634ffa08c2b4</ApplicationIdGuid>
 
 		<!-- Versions -->

@@ -1,7 +1,7 @@
 ﻿using System;
-using CRToolKit.Global;
+using ResourcingToolKit.Global;
 
-namespace CRToolKit.ViewModel
+namespace ResourcingToolKit.ViewModel
 {
 	public class AppSettingsVM : BaseViewModel
     {
