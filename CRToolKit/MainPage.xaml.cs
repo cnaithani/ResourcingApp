@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using DocumentFormat.OpenXml.Drawing;
 using ResourcingToolKit.Classes;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace ResourcingToolKit;
 
@@ -384,7 +385,18 @@ public partial class MainPage : ContentPage
         int ctr = 1;
         var targetFileName = candidate.Name;
         string targetFilePath = null;
-        targetFilePath = redultDirpath + "\\" + targetFileName + ".docx";
+        string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        redultDirpath = System.IO.Path.Combine(path, "Results");
+        targetFilePath = System.IO.Path.Combine(redultDirpath, targetFileName + ".docx");
+        //if (DeviceInfo.Current.Manufacturer.ToLower().Contains("apple"))
+        //{
+        //    targetFilePath = redultDirpath + "/" + targetFileName + ".docx";
+        //}
+        //else
+        //{
+        //    targetFilePath = redultDirpath + "\\" + targetFileName + ".docx";
+        //}
+        
 
         if (!Directory.Exists(redultDirpath))
         {
@@ -394,11 +406,20 @@ public partial class MainPage : ContentPage
         while (File.Exists(targetFilePath))
         {
             ctr += 1;
-            targetFilePath = redultDirpath + "\\" + targetFileName + " - " + ctr.ToString() + ".docx";
+            targetFilePath = System.IO.Path.Combine(redultDirpath, targetFileName + " - " + ctr.ToString() + ".docx");
+            //if (DeviceInfo.Current.Manufacturer.ToLower().Contains("apple"))
+            //{
+            //    targetFilePath = redultDirpath + "/" + targetFileName + " - " + ctr.ToString() + ".docx";
+            //}
+            //else
+            //{
+            //    targetFilePath = redultDirpath + "\\" + targetFileName + " - " + ctr.ToString() + ".docx";
+            //}
+
         }
         if (!File.Exists(targetFilePath))
         {
-            File.Copy(templateFilePath, targetFilePath);
+            File.Copy(templateFilePath, targetFilePath,true);
         }
 
         using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(targetFilePath, true))
