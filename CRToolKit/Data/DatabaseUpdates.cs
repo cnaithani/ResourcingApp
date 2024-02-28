@@ -40,6 +40,7 @@ namespace ResourcingToolKit.Data
             //await App.Database.database.CreateTableAsync<Product>();
             //await App.Database.database.CreateTableAsync<ProductImages>();
             await App.Database.database.CreateTableAsync<Candidate>();
+            await App.Database.database.CreateTableAsync <Settings>();
         }
     }
 }

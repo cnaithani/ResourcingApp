@@ -197,8 +197,22 @@ public partial class MainPage : ContentPage
             await GetResumeHeadlines(conversation, candidateDTO);
 
             //Get local template file path from config
-            var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
-            var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString(); ;
+            //var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
+            //var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString();
+            var setting = await App.Database.database.Table<Models.Settings>().FirstOrDefaultAsync();
+            if (setting == null || setting.TemplateFile == null)
+            {
+                lblStatus.Text = "Please select templete file from settings screen!";
+                return null;
+            }
+            if (setting.ProcessingFolder == null)
+            {
+                lblStatus.Text = "Please select result folder from settings screen!";
+                return null;
+            }
+            var templateFilePath = setting.TemplateFile;
+            var redultDirpath = setting.ProcessingFolder;
+
             var filePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
 
             candidate.FilePath = filePath;
@@ -220,6 +234,7 @@ public partial class MainPage : ContentPage
                 goto TRYAGAIN;
             }
             Console.WriteLine(ex.Message);
+            await DisplayAlert("Error", ex.Message, "OK");
         }
         return candidate;
     }
