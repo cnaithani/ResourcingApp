@@ -16,6 +16,7 @@ namespace ResourcingToolKit
             string dbName = "AppSQLite.db3";
             string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string dbPath = Path.Combine(path, dbName);
+            //File.Delete(dbPath);
             // Check if your DB has already been extracted.
             if (!File.Exists(dbPath))
             {

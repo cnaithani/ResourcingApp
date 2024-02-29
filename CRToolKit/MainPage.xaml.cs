@@ -198,9 +198,9 @@ public partial class MainPage : ContentPage
             await GetResumeHeadlines(conversation, candidateDTO);
 
             //Get local template file path from config
-            //var templateFilePath = Config.GetRequiredSection("Settings:TemplateFilePath").Value.ToString();
-            //var redultDirpath = Config.GetRequiredSection("Settings:RedultDirpath").Value.ToString();
-            var setting = await App.Database.database.Table<Models.Settings>().FirstOrDefaultAsync();
+            //var templateFilePath = Config.GetRequiredSection("AppSettings:TemplateFilePath").Value.ToString();
+            //var redultDirpath = Config.GetRequiredSection("AppSettings:RedultDirpath").Value.ToString();
+            var setting = await App.Database.database.Table<Models.AppSettings>().FirstOrDefaultAsync();
             if (setting == null || setting.TemplateFile == null)
             {
                 lblStatus.Text = "Please select templete file from settings screen!";
@@ -385,18 +385,9 @@ public partial class MainPage : ContentPage
         int ctr = 1;
         var targetFileName = candidate.Name;
         string targetFilePath = null;
-        string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        redultDirpath = System.IO.Path.Combine(path, "Results");
+        //string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        //redultDirpath = System.IO.Path.Combine(path, "Results");
         targetFilePath = System.IO.Path.Combine(redultDirpath, targetFileName + ".docx");
-        //if (DeviceInfo.Current.Manufacturer.ToLower().Contains("apple"))
-        //{
-        //    targetFilePath = redultDirpath + "/" + targetFileName + ".docx";
-        //}
-        //else
-        //{
-        //    targetFilePath = redultDirpath + "\\" + targetFileName + ".docx";
-        //}
-        
 
         if (!Directory.Exists(redultDirpath))
         {
@@ -407,15 +398,6 @@ public partial class MainPage : ContentPage
         {
             ctr += 1;
             targetFilePath = System.IO.Path.Combine(redultDirpath, targetFileName + " - " + ctr.ToString() + ".docx");
-            //if (DeviceInfo.Current.Manufacturer.ToLower().Contains("apple"))
-            //{
-            //    targetFilePath = redultDirpath + "/" + targetFileName + " - " + ctr.ToString() + ".docx";
-            //}
-            //else
-            //{
-            //    targetFilePath = redultDirpath + "\\" + targetFileName + " - " + ctr.ToString() + ".docx";
-            //}
-
         }
         if (!File.Exists(targetFilePath))
         {

@@ -3,7 +3,7 @@ namespace ResourcingToolKit.Global
 {
 	public static class Constants
 	{
-        //Settings
+        //AppSettings
         public const string ThemeCaption = "APPTHEME";
         public const string DarkThemeName = "Dark";
         public const string LightThemeName = "Light";

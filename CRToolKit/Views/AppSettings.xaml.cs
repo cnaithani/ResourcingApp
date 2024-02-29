@@ -20,7 +20,7 @@ public partial class AppSettings : ContentPage
         currentVM = new AppSettingsVM();
         BindingContext = currentVM;
 
-        var setting = await App.Database.database.Table<Models.Settings>().FirstOrDefaultAsync();
+        var setting = await App.Database.database.Table<Models.AppSettings>().FirstOrDefaultAsync();
         if (setting != null)
         {
             txtTemplate.Text = setting.TemplateFile;
@@ -30,20 +30,28 @@ public partial class AppSettings : ContentPage
 
     async void Ok_Clicked(System.Object sender, System.EventArgs e)
     {
-        (App.Current.MainPage as Shell).GoToAsync("//Main/Home", true);
-
-        var setting = await App.Database.database.Table<Settings>().FirstOrDefaultAsync();
+        var setting = await App.Database.database.Table<Models.AppSettings>().FirstOrDefaultAsync();
         var exists = true;
         if (setting == null) { 
-            setting = new Settings();
+            setting = new Models.AppSettings();
             exists = false;
         }
-        setting.TemplateFile = txtProcessing.Text;
+        setting.TemplateFile = txtTemplate.Text;
         setting.ProcessingFolder = txtProcessing.Text;
-        if (!exists)
-            await App.Database.database.InsertAsync(setting);
-        else
-            await App.Database.database.UpdateAsync(setting);
+        try
+        {
+            if (!exists)
+                await App.Database.database.InsertAsync(setting);
+            else
+                await App.Database.database.UpdateAsync(setting);
+        }
+        catch (Exception ex)
+        {
+            var str = ex.ToString();
+        }
+
+
+        (App.Current.MainPage as Shell).GoToAsync("//Main/Home", true);
     }
 
     private async void btnBrowse_Clicked(object sender, EventArgs e)

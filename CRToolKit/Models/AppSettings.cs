@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace ResourcingToolKit.Models
 {
-    internal class Settings
+    internal class AppSettings
     {
+        [SQLite.PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
         public string TemplateFile { get; set; }
         public string ProcessingFolder { get; set; }
         
