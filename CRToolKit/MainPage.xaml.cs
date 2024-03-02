@@ -79,7 +79,7 @@ public partial class MainPage : ContentPage
         btnProcess.IsEnabled = false;
         processedFile = 0;
         errorFile = 0;
-        lblStatus.Text += " Started Processing...";
+        lblStatus.Text = " Started Processing...";
         foreach (var file in Directory.GetFiles(folderPath))
         {
             var candidate = await Process(file);
@@ -488,7 +488,7 @@ public partial class MainPage : ContentPage
             writer.ReplacePara(para, com + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Company);
 
             para = durParas[ctr];
-            writer.ReplacePara(doc,para, dur + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Duration, candidate.WorkHistory[ctr].Position, 130);
+            writer.ReplacePara(doc,para, dur + (ctr + 1).ToString(), candidate.WorkHistory[ctr].Duration, candidate.WorkHistory[ctr].Position, 140);
         }
 
         writer.RemovePara(doc, desig);
@@ -518,13 +518,18 @@ public partial class MainPage : ContentPage
             writer.ReplacePara(para, replacement1 + (ctr + 1).ToString(), candidate.Qualification[ctr].University);
 
             para = replacementParas2[ctr];
-            writer.ReplacePara(doc, para, replacement2 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location, candidate.Qualification[ctr].University, 110);
+            writer.ReplacePara(doc, para, replacement2 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location, candidate.Qualification[ctr].University, 140);
 
             para = replacementParas3[ctr];
             writer.ReplacePara(para, replacement3 + (ctr + 1).ToString(), candidate.Qualification[ctr].Degree);
 
             para = replacementParas4[ctr];
-            writer.ReplacePara(doc, para, replacement4 + (ctr + 1).ToString(), candidate.Qualification[ctr].DisplayDate, candidate.Qualification[ctr].Degree, 160);
+            writer.ReplacePara(doc, para, replacement4 + (ctr + 1).ToString(), candidate.Qualification[ctr].DisplayDate, candidate.Qualification[ctr].Degree, 140);
+
+            writer.RemoveText(doc, replacement1 + (ctr + 1).ToString());
+            writer.RemoveText(doc, replacement2 + (ctr + 1).ToString());
+            writer.RemoveText(doc, replacement3 + (ctr + 1).ToString());
+            writer.RemoveText(doc, replacement4 + (ctr + 1).ToString());
         }
 
         writer.RemovePara(doc, replacement1);
@@ -538,6 +543,7 @@ public partial class MainPage : ContentPage
         writer.RemoveParagraphsContainingText(doc, "f07c", " NULL");
         writer.RemoveEmptyLines(doc);
         writer.RemoveText(doc, "NULL");
+        writer.RemoveEmptyBulletPoints(doc);
     }
     #endregion
 
