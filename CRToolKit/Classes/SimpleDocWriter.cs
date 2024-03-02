@@ -55,7 +55,9 @@ namespace ResourcingToolKit.Classes
         public void ReplacePara(Paragraph para, string searchtext, string replacetext)
         {
             if (string.IsNullOrEmpty(replacetext))
-                return;
+            {
+                replacetext = string.Empty;
+            }
             if (replacetext.Contains("I'm sorry"))
                 return;
 

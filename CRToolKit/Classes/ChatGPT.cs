@@ -326,7 +326,7 @@ namespace ResourcingToolKit
         [Category("General")]
         [DisplayName("OpenAI API Key")]
         [Description("Set API Key. For OpenAI API, see \"https://beta.openai.com/account/api-keys\" for more details.")]
-        public string OpenAIApiKey { get; set; } = "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";
+        public string OpenAIApiKey { get; set; } = "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";
 
         [Category("General")]
         [DisplayName("Single Response")]

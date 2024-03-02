@@ -286,7 +286,7 @@ public partial class MainPage : ContentPage
     TRYAGAIN:
         try
         {
-            var replace1 = "The primary core competencies of the candidate are:";
+            var replace1 = "The core competencies of the candidate include:";
 
             var sbPrompt = new StringBuilder();
             sbPrompt.AppendLine(string.Concat("Please tell core competencies of candidate "));
@@ -368,8 +368,9 @@ public partial class MainPage : ContentPage
         tenure = (tenure == null) ? string.Empty : tenure;
         sbPrompt.AppendLine(string.Concat("Please tell bullet point summary of candidate's work in ", work.Company, " during ", tenure));
         conversation.AppendUserInput(sbPrompt.ToString());
+        conversation.AppendSystemMessage("Please use first person narrative. Logically saprate sections through bullet points if needed.");
         work.Summary = await SendRequestAsync();
-        if (!string.IsNullOrEmpty(work.Summary) && (work.Summary.ToLower().Contains("not provided") || work.Summary.ToLower().Contains("i cannot provide")))
+        if (!string.IsNullOrEmpty(work.Summary) && (work.Summary.ToLower().Contains("not provided") || work.Summary.ToLower().Contains("i cannot provide") || (work.Summary.ToLower().Contains("did not find any information"))))
         {
             work.Summary = string.Empty;
             //TODO: Log issue - High
@@ -377,7 +378,6 @@ public partial class MainPage : ContentPage
     }
 
     #endregion
-
 
     #region Create File
     String TransformFile(CandidateDTO candidate, string templateFilePath, string redultDirpath)
@@ -407,8 +407,6 @@ public partial class MainPage : ContentPage
         using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(targetFilePath, true))
         {
             //string? docText = null;
-
-
             if (wordDoc.MainDocumentPart is null)
             {
                 throw new ArgumentNullException("MainDocumentPart and/or Body is null.");
@@ -519,17 +517,6 @@ public partial class MainPage : ContentPage
         writer.RemovePara(doc, replacement3);
         writer.RemovePara(doc, replacement4);
     }
-    //void ReplacePara(CandidateDTO candidate, WordprocessingDocument doc, string replacementChar, string searchChar)
-    //{
-    //    int ctrWork = candidate.Qualification.Count;
-    //    var replaceParas = doc.MainDocumentPart.Document.Body.Descendants<DocumentFormat.OpenXml.Wordprocessing.Paragraph>().Where(p => p.InnerText.Contains(replacement1)).ToList();
-    //    for (int ctr = 0; ctr < ctrWork; ctr++)
-    //    {
-    //        var para = replaceParas[ctr];
-    //        writer.ReplacePara(para, searchChar, replacementChar);
-    //    }
-    //}
-
     void RemoveExtrachars(WordprocessingDocument doc)
     {
         writer.RemoveParagraphsContainingText(doc, "f07c", " LNKIN");
