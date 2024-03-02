@@ -17,6 +17,7 @@ using DocumentFormat.OpenXml.Drawing;
 using ResourcingToolKit.Classes;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using DocumentFormat.OpenXml.Math;
 
 namespace ResourcingToolKit;
 
@@ -177,7 +178,7 @@ public partial class MainPage : ContentPage
             sbPrompt.AppendLine("\"Duration\" <string>");
             sbPrompt.AppendLine("\"Location\" <string>");
             sbPrompt.AppendLine("}]");
-            sbPrompt.AppendLine("\"Summary\" <string>");
+            //sbPrompt.AppendLine("\"Summary\" <string>");
             sbPrompt.AppendLine("\"Address\" <string>");
             sbPrompt.AppendLine("\"Linkedin\" <string>");
             sbPrompt.AppendLine("Do not infer any data based on previous training, strictly use only source text given below as input.");
@@ -193,6 +194,14 @@ public partial class MainPage : ContentPage
 
             var candidateDTO = JsonConvert.DeserializeObject<CandidateDTO>(returnChat);
             JSONTransformer.Transform(candidateDTO);
+            conversation.AppendUserInput("Please suggest objective/summary for candidate resume");
+            conversation.AppendSystemMessage("Please use first person narrative.");
+            returnChat = await SendRequestAsync();
+            int index = returnChat.IndexOf(": \n");
+            if (index >= 0)
+                returnChat=  returnChat.Substring(index + 1); // +1 to exclude the delimiter itself
+            
+            candidateDTO.Summary = returnChat.Trim();
             await GetWork(conversation, candidateDTO.WorkHistory);
             await GetRating(conversation, candidateDTO);
             await GetResumeHeadlines(conversation, candidateDTO);
@@ -213,9 +222,8 @@ public partial class MainPage : ContentPage
             }
             var templateFilePath = setting.TemplateFile;
             var redultDirpath = setting.ProcessingFolder;
-
-            var filePath = TransformFile(candidateDTO, templateFilePath, redultDirpath);
-
+            string filePath = TransformFile(candidateDTO, templateFilePath, redultDirpath); 
+           
             candidate.FilePath = filePath;
             candidate.Name = candidateDTO.Name;
             candidate.Email = candidateDTO.Email;
@@ -459,10 +467,17 @@ public partial class MainPage : ContentPage
         for (int ctr = 0; ctr < ctrWork; ctr++)
         {
             var workText = candidate.WorkHistory[ctr].Summary.Split("\n- ");
+            if (workText.Length>0 && workText[0].EndsWith(":\n"))
+            {
+                string[] newArray = new string[workText.Length - 1];
+                Array.Copy(workText, 1, newArray, 0, newArray.Length);
+                workText = newArray;    
+            }
             if (workText != null && workText.Length > 0 && workText[0].StartsWith("-"))
             {
                 workText[0] = workText[0][1..].Trim();
             }
+            
             var para = workSummParas[ctr];
             writer.AddBulletListInPara(doc, para, workText.ToList(), summ + (ctr + 1).ToString());
 
@@ -503,13 +518,13 @@ public partial class MainPage : ContentPage
             writer.ReplacePara(para, replacement1 + (ctr + 1).ToString(), candidate.Qualification[ctr].University);
 
             para = replacementParas2[ctr];
-            writer.ReplacePara(para, replacement2 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location);
+            writer.ReplacePara(doc, para, replacement2 + (ctr + 1).ToString(), candidate.Qualification[ctr].Location, candidate.Qualification[ctr].University, 110);
 
             para = replacementParas3[ctr];
             writer.ReplacePara(para, replacement3 + (ctr + 1).ToString(), candidate.Qualification[ctr].Degree);
 
             para = replacementParas4[ctr];
-            writer.ReplacePara(para, replacement4 + (ctr + 1).ToString(), candidate.Qualification[ctr].DisplayDate);
+            writer.ReplacePara(doc, para, replacement4 + (ctr + 1).ToString(), candidate.Qualification[ctr].DisplayDate, candidate.Qualification[ctr].Degree, 160);
         }
 
         writer.RemovePara(doc, replacement1);
@@ -520,7 +535,9 @@ public partial class MainPage : ContentPage
     void RemoveExtrachars(WordprocessingDocument doc)
     {
         writer.RemoveParagraphsContainingText(doc, "f07c", " LNKIN");
+        writer.RemoveParagraphsContainingText(doc, "f07c", " NULL");
         writer.RemoveEmptyLines(doc);
+        writer.RemoveText(doc, "NULL");
     }
     #endregion
 

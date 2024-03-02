@@ -18,7 +18,7 @@ using System.Reflection.Metadata;
 
 namespace ResourcingToolKit.Classes
 {
-    public class SimpleDocWriter 
+    public class SimpleDocWriter
     {
 
         public void AddBulletListInPara(WordprocessingDocument document, Paragraph para, List<string> sentences, string searchtext)
@@ -36,7 +36,7 @@ namespace ResourcingToolKit.Classes
                 {
                     inserAfter = para;
                 }
-                newPara.InnerXml = para.InnerXml.Replace(searchtext, sentence);
+                newPara.InnerXml = para.InnerXml.Replace(searchtext, sentence.EscapeXmlCharacters());
 
                 var parent = inserAfter.Parent;
                 parent.InsertAfter(newPara, inserAfter);
@@ -56,12 +56,12 @@ namespace ResourcingToolKit.Classes
         {
             if (string.IsNullOrEmpty(replacetext))
             {
-                replacetext = string.Empty;
+                replacetext = "NULL";
             }
             if (replacetext.Contains("I'm sorry"))
                 return;
 
-            para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
+            para.InnerXml = para.InnerXml.Replace(searchtext, replacetext.EscapeXmlCharacters());
         }
 
         public void ReplacePara(WordprocessingDocument document, Paragraph para, string searchtext, string replacetext, string previosText, int space)
@@ -73,7 +73,7 @@ namespace ResourcingToolKit.Classes
 
             space = space - previosText.Length;
             if (space < 1) space = 1;
-            replacetext =  new string(' ', space) + replacetext;
+            replacetext = new string(' ', space) + replacetext;
             para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
 
             var textRuns = para.Descendants<Text>().ToList();
@@ -99,6 +99,37 @@ namespace ResourcingToolKit.Classes
                     p.RemoveAllChildren();
                     p.Remove();
                 }
+            }
+        }
+
+        public void RemoveText(WordprocessingDocument doc, string searchtext)
+        {
+            //MainDocumentPart mainpart = document.MainDocumentPart;
+            //IEnumerable<OpenXmlElement> elems = mainpart.Document.Body.Descendants().ToList();
+
+            //foreach (OpenXmlElement elem in elems)
+            //{
+            //    if (elem is Text && elem.InnerText.Contains(searchtext))
+            //    {
+            //        elem.InnerXml = elem.InnerXml.Replace(searchtext, string.Empty);
+            //    }
+            //}
+            var body = doc.MainDocumentPart.Document.Body;
+
+            foreach (var paragraph in body.Descendants<Paragraph>())
+            {
+                foreach (var run in paragraph.Descendants<Run>())
+                {
+                    foreach (var text in run.Descendants<Text>())
+                    {
+                        if (text.Text.Contains(searchtext))
+                        {
+                            // Replace the target word with an empty string
+                            text.Text = text.Text.Replace(searchtext, "");
+                        }
+                    }
+                }
+
             }
         }
 
@@ -167,6 +198,5 @@ namespace ResourcingToolKit.Classes
         {
             return paragraph != null && string.IsNullOrEmpty(paragraph.InnerText.Trim());
         }
-
     }
 }

@@ -8,5 +8,7 @@ namespace ResourcingToolKit.Global
         public const string DarkThemeName = "Dark";
         public const string LightThemeName = "Light";
     }
+
+
 }
 
