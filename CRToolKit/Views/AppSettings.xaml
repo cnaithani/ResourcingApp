@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ResourcingToolKit.Views.AppSettings"
-             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}"
+             Title="Settings">
     <StackLayout BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceL}, Dark={StaticResource SurfaceD}}">
         <StackLayout VerticalOptions="FillAndExpand">
             <ScrollView Padding="5,5,5,0">

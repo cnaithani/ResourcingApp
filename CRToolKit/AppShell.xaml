@@ -8,16 +8,13 @@
     BackgroundColor="{AppThemeBinding Light={StaticResource AppColorL}, Dark={StaticResource AppColorD}}"
     >
    
-    <TabBar Route="Main"> 
-        <Tab Route="Home" Icon="home32.png" Title="Home" >
-            <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
-        </Tab>
-        <Tab Icon="list32.png"  Title="Candidates">
+    <TabBar Route="Main">
+        <Tab Icon="list32.png" Title="Uploads">
             <ShellContent ContentTemplate="{DataTemplate views:SimpleList}"/>
         </Tab>
-        <!--<Tab Icon="notification32.png"  Title="Notifications">
-            <ShellContent  Title="Notifications" ContentTemplate="{DataTemplate views:SimpleList}"/>
-        </Tab>-->
+        <Tab Route="Home" Icon="home32.png" Title="Processing" >
+            <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
+        </Tab>
         <Tab Icon="setting32.png"  Title="Settings">
             <ShellContent ContentTemplate="{DataTemplate views:AppSettings}"/>
         </Tab>

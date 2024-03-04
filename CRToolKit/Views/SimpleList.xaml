@@ -2,12 +2,13 @@
 <controls:ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="http://schemas.microsoft.com/dotnet/2021/maui"
              x:Class="ResourcingToolKit.Views.SimpleList"
-             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundL}, Dark={StaticResource BackgroundD}}"
+             Title="Uploaded Resumes"         >
     <StackLayout VerticalOptions="StartAndExpand">
         <StackLayout x:Name="candidateList" IsVisible="false"  VerticalOptions="StartAndExpand">
             <ScrollView Margin="0,10,0,0" HeightRequest="360"
                         VerticalOptions="StartAndExpand" VerticalScrollBarVisibility="Default">
-                <ListView   BackgroundColor="Transparent" Loaded="ListView_Loaded" 
+                <ListView   BackgroundColor="Transparent" Loaded="ListView_Loaded"  
                         ItemsSource="{Binding CandidateList}"
                         SeparatorVisibility="None"
                         HasUnevenRows="True" VerticalOptions="StartAndExpand">
@@ -85,7 +86,6 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <!--<ImageButton Source="add64.png" VerticalOptions="End"></ImageButton>-->
             </ScrollView>
         </StackLayout>
         <ActivityIndicator x:Name="isLoadig" IsRunning="True" Color="Orange" 
@@ -93,7 +93,7 @@
         <StackLayout  IsVisible="{Binding ShowAdd}" VerticalOptions="End" HeightRequest="64" Margin="0,0,0,10">
             <ImageButton Source="add64.png" Aspect="AspectFit" VerticalOptions="End"
                          HeightRequest="48" WidthRequest="48"
-                         BackgroundColor="Transparent">
+                         BackgroundColor="Transparent" Clicked="Add_Clicked">
                 <ImageButton.Shadow>
                     <Shadow Brush="Black"
                     Offset="5,5"

@@ -22,12 +22,17 @@ public partial class SimpleList : ContentPage
         candidateList.IsVisible = false;
         await currentVM.PopulateCandidates();
         candidateList.IsVisible = true;
+        this.isLoadig.IsRunning = false;
     }
-
 
 
     private void ListView_Loaded(object sender, EventArgs e)
     {
-        this.isLoadig.IsRunning = false;
+        //this.isLoadig.IsRunning = false;
+    }
+
+    void Add_Clicked(System.Object sender, System.EventArgs e)
+    {
+        AppShell.Current.GoToAsync("///Home");
     }
 }

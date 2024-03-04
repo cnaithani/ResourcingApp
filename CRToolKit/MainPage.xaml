@@ -1,24 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ResourcingToolKit.MainPage">
-
-    <!--<StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="Center">
-        <Label Text="Select Folder for Processing:"/>
-        <StackLayout Orientation="Vertical">
-            <Button x:Name="btnBrowse" Clicked="btnBrowse_Clicked" 
-                    Height="28" Width="28" Margin="35,0,0,0"
-                    HorizontalOptions="Start"  Background="Transparent">
-                --><!--<Image Source="pack://application:,,,/Unakin;component/Resources/add.png" Width="24" Height="24"/>--><!--
-            </Button>
-            <Grid Margin="5,5,5,0">
-                --><!--<in
-                <Tex x:Name="txtImage" Margin="0,0,5,10" IsReadOnly="True" />
-                <TextBlock x:Name="watermarkImage" Margin="5,0" IsHitTestVisible="False" FontStyle="Italic" Foreground="Gray">Select Image</TextBlock>--><!--
-            </Grid>
-
-        </StackLayout>
-    </StackLayout>-->
+             x:Class="ResourcingToolKit.MainPage"
+             Title="Processing">
 
     <StackLayout Orientation="Vertical" HorizontalOptions="Center" VerticalOptions="Center">
         <Label Text="Primary Skills:" HorizontalOptions="Center"/>
