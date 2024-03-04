@@ -82,7 +82,12 @@ public partial class MainPage : ContentPage
         lblStatus.Text = " Started Processing...";
         foreach (var file in Directory.GetFiles(folderPath))
         {
+            if (!file.ToLower().EndsWith(".docx"))
+                continue;
             var candidate = await Process(file);
+            if (string.IsNullOrEmpty(candidate.Name))
+                candidate = null;
+
             if (candidate != null)
             {
                 Candidates.Add(candidate);
