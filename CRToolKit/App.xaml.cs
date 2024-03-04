@@ -41,6 +41,7 @@ public partial class App : Application
         });
 
         MainPage = new AppShell();
+
     } 
 
     public static  AppDatabase Database
@@ -54,6 +55,7 @@ public partial class App : Application
             return database;
         }
     }
+
     private static async Task InitiateDB()
     {
         if (database == null)
@@ -66,10 +68,27 @@ public partial class App : Application
             database = new AppDatabase(await commonDeviceHandler.GetDBFile());
         }
     }
-    protected  override void OnStart()
+
+    protected override Window CreateWindow(IActivationState activationState)
     {
-        base.OnStart();
-        
+        var window = base.CreateWindow(activationState);
+
+        if (DeviceInfo.Platform == DevicePlatform.MacCatalyst || DeviceInfo.Platform == DevicePlatform.WinUI)
+        {
+            window.MinimumWidth = 800;
+            window.MaximumWidth = 800;
+            window.MinimumHeight = 600;
+            window.MaximumHeight = 600;
+
+            // Get display size
+            var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
+
+            // Center the window
+            window.X = (displayInfo.Width - window.MinimumWidth) / 2;
+            window.Y = (displayInfo.Height - window.MaximumHeight) / 2;
+        }
+
+        return window;
     }
 
 }
