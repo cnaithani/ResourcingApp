@@ -16,12 +16,12 @@
 		<ApplicationTitle>ResourcingToolKit</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.resourcingtoolkit</ApplicationId>
+		<ApplicationId>com.GCIInc.resourcingtoolkit</ApplicationId>
 		<ApplicationIdGuid>e1c8cb76-301d-4495-b8fe-634ffa08c2b4</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
+		<ApplicationVersion>2</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
@@ -30,6 +30,7 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<!--<PlatformTarget>x64</PlatformTarget>-->
+		<Configurations>Release;Debug</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
@@ -40,6 +41,18 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<UseInterpreter>true</UseInterpreter>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-maccatalyst|AnyCPU'">
+	  <CreatePackage>true</CreatePackage>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-maccatalyst|AnyCPU'">
+	  <CreatePackage>true</CreatePackage>
+	  <CodesignKey>Mac Developer</CodesignKey>
+	  <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	  <DebugSymbols>true</DebugSymbols>
+	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 	<ItemGroup>
 		<!-- App Icon -->
