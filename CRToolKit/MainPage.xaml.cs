@@ -170,7 +170,7 @@ public partial class MainPage : ContentPage
             sbPrompt.AppendLine("\"Qualification\"");
             sbPrompt.AppendLine("[{");
             sbPrompt.AppendLine("\"Degree\" <string>");
-            sbPrompt.AppendLine("\"Certification\" <string>");
+            //sbPrompt.AppendLine("\"Certification\" <string>");
             sbPrompt.AppendLine("\"University\" <string>");
             sbPrompt.AppendLine("\"College\" <string>");
             sbPrompt.AppendLine("\"Month\" <string>");
@@ -204,11 +204,13 @@ public partial class MainPage : ContentPage
             conversation.AppendUserInput("Please suggest objective/summary for candidate resume");
             conversation.AppendSystemMessage("Please use first person narrative.");
             returnChat = await SendRequestAsync();
-            returnChat = returnChat.Replace("Objective:", string.Empty);
-            returnChat = returnChat.Replace("Summary:", string.Empty);
             int index = returnChat.IndexOf(": \n");
             if (index >= 0)
                 returnChat=  returnChat.Substring(index + 1); // +1 to exclude the delimiter itself
+
+            returnChat = returnChat.Replace("Objective:", string.Empty);
+            returnChat = returnChat.Replace("Summary:", string.Empty);
+            returnChat = Regex.Replace(returnChat, @"(\n)+", "\n\n", RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
             
             candidateDTO.Summary = returnChat.Trim();
             await GetWork(conversation, candidateDTO.WorkHistory);
@@ -388,7 +390,8 @@ public partial class MainPage : ContentPage
         conversation.AppendSystemMessage("Please use first person narrative. Logically saprate sections through bullet points if needed.");
         var summ = await SendRequestAsync();
         Console.WriteLine(summ);
-        if (!string.IsNullOrEmpty(summ) && (summ.ToLower().Contains("not provided") || summ.ToLower().Contains("i cannot provide") || (summ.ToLower().Contains("did not find any information"))))
+        string[] ignoreChar = ["not provided","i cannot provide","did not find any information","m sorry"];
+        if (!string.IsNullOrEmpty(summ) && (ignoreChar.Any(summ.ToLower().Contains)))
         {
             return;
         }

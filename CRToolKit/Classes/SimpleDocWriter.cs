@@ -78,9 +78,6 @@ namespace ResourcingToolKit.Classes
             }
             document.Save();
 
-            //space = space - previosText.Length - searchtext.Length;
-            //if (space < 1) space = 1;
-            //replacetext = new string(' ', space) + replacetext;
             para.InnerXml = para.InnerXml.Replace(searchtext, replacetext);
 
             bool isMultiline = false;
@@ -97,25 +94,11 @@ namespace ResourcingToolKit.Classes
         {
             bool isMultiLine = false;
             var paragraph = para;
-            var fontSize = paragraph.Descendants<FontSize>().FirstOrDefault();
-            double lineHeight = 0;
-
-            if (fontSize != null)
-            {
-                var fontValue = double.Parse(fontSize.Val);
-                // Assuming 1.2 times the font size as the average line height
-                lineHeight = fontValue * 1.2;
-            }
-            else
-            {
-                // Estimate line height if font size is not specified
-                lineHeight = 11 * 1.2; // Assuming a default font size of 11 points
-            }
 
             var text = paragraph.InnerText;
 
             // Approximate the number of lines based on the text length and average line height
-            var numLines = Math.Ceiling((double)text.Length / 160); // Assuming an average line length of 80 characters
+            var numLines = Math.Ceiling((double)text.Length / 155); // Assuming an average line length of 80 characters
 
             // Check if the paragraph spans more than one line
             if (numLines > 1)
