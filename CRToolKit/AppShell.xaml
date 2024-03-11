@@ -9,11 +9,11 @@
     >
    
     <TabBar Route="Main">
-        <Tab Icon="list32.png" Title="Uploads">
-            <ShellContent ContentTemplate="{DataTemplate views:SimpleList}"/>
-        </Tab>
         <Tab Route="Home" Icon="home32.png" Title="Processing" >
             <ShellContent ContentTemplate="{DataTemplate local:MainPage}"/>
+        </Tab>
+        <Tab Icon="list32.png" Title="Uploads">
+            <ShellContent ContentTemplate="{DataTemplate views:SimpleList}"/>
         </Tab>
         <Tab Icon="setting32.png"  Title="Settings">
             <ShellContent ContentTemplate="{DataTemplate views:AppSettings}"/>

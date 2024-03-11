@@ -15,14 +15,18 @@ public partial class SimpleList : ContentPage
         if (currentVM == null)
         {
             currentVM = new List1VM();
-            BindingContext = currentVM;
+            BindingContext = currentVM; 
+            await currentVM.PopulateCandidates();
+            candidateList.ItemsSource = currentVM.CandidateList;
         }
-
-        this.isLoadig.IsRunning = true;
-        candidateList.IsVisible = false;
-        await currentVM.PopulateCandidates();
-        candidateList.IsVisible = true;
-        this.isLoadig.IsRunning = false;
+        else
+        {
+            //this.isLoadig.IsRunning = true;
+            //candidateList.IsVisible = false;
+            await currentVM.PopulateCandidates();
+            //candidateList.IsVisible = true;
+            //this.isLoadig.IsRunning = false;
+        }
     }
 
 

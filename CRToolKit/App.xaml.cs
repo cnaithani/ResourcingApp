@@ -3,7 +3,7 @@ using ResourcingToolKit.Interfaces;
 using System.Threading;
 
 namespace ResourcingToolKit;
-
+[XamlCompilation(XamlCompilationOptions.Skip)]
 public partial class App : Application
 {
     static AppDatabase database;

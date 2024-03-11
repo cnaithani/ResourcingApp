@@ -20,7 +20,7 @@ using System.Xml.Linq;
 using DocumentFormat.OpenXml.Math;
 
 namespace ResourcingToolKit;
-
+[XamlCompilation(XamlCompilationOptions.Skip)]
 public partial class MainPage : ContentPage
 {
     int count = 0;
@@ -202,6 +202,8 @@ public partial class MainPage : ContentPage
             conversation.AppendUserInput("Please suggest objective/summary for candidate resume");
             conversation.AppendSystemMessage("Please use first person narrative.");
             returnChat = await SendRequestAsync();
+            returnChat = returnChat.Replace("Objective:", string.Empty);
+            returnChat = returnChat.Replace("Summary:", string.Empty);
             int index = returnChat.IndexOf(": \n");
             if (index >= 0)
                 returnChat=  returnChat.Substring(index + 1); // +1 to exclude the delimiter itself

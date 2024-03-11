@@ -4,6 +4,7 @@ using ResourcingToolKit.Models;
 using System.Linq;
 using ResourcingToolKit.ViewModel;
 using CommunityToolkit.Maui.Core.Views;
+using System.Collections.ObjectModel;
 
 namespace ResourcingToolKit.Views
 {
@@ -14,7 +15,7 @@ namespace ResourcingToolKit.Views
             
         }
 
-        public List<CandidateDTO> CandidateList { get; set; }
+        public ObservableCollection<CandidateDTO> CandidateList { get; set; }
         public List<ProductListDTO> ProductList { get; set; }
         public string DisplayProductDescription { get; set; }
         public bool ShowAdd { get; set; } = false;
@@ -52,8 +53,12 @@ namespace ResourcingToolKit.Views
         {
             try
             {
+                if (CandidateList == null){
+                    CandidateList = new ObservableCollection<CandidateDTO>();
+                }
+
                 var candList = await App.Database.database.Table<Candidate>().OrderByDescending(x => x.Modified).Take(10).ToListAsync();
-                CandidateList = candList.Select(x => new CandidateDTO
+                var cList = candList.Select(x => new CandidateDTO
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -64,6 +69,12 @@ namespace ResourcingToolKit.Views
                     Rating = x.Rating,
 
                 }).ToList();
+                CandidateList.Clear();
+
+                foreach(var item in cList){
+                    CandidateList.Add(item);
+                }
+
             }
             catch(Exception e)
             {

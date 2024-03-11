@@ -14,7 +14,9 @@ namespace ResourcingToolKit
         public async Task<string> GetDBFile()
         {
             string dbName = "AppSQLite.db3";
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string path = Path.Combine( Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ResourcingToolkit", "Data");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
             string dbPath = Path.Combine(path, dbName);
             //File.Delete(dbPath);
             // Check if your DB has already been extracted.
