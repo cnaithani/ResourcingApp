@@ -18,6 +18,7 @@ using ResourcingToolKit.Classes;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Math;
+using System.Diagnostics;
 
 namespace ResourcingToolKit;
 [XamlCompilation(XamlCompilationOptions.Skip)]
@@ -182,6 +183,7 @@ public partial class MainPage : ContentPage
             sbPrompt.AppendLine("\"Position\" <string>");
             sbPrompt.AppendLine("\"Duration\" <string>");
             sbPrompt.AppendLine("\"Location\" <string>");
+            sbPrompt.AppendLine("\"Summary\" <string>");
             sbPrompt.AppendLine("}]");
             //sbPrompt.AppendLine("\"Summary\" <string>");
             sbPrompt.AppendLine("\"Address\" <string>");
@@ -384,11 +386,14 @@ public partial class MainPage : ContentPage
         sbPrompt.AppendLine(string.Concat("Please tell bullet point summary of candidate's work in ", work.Company, " during ", tenure));
         conversation.AppendUserInput(sbPrompt.ToString());
         conversation.AppendSystemMessage("Please use first person narrative. Logically saprate sections through bullet points if needed.");
-        work.Summary = await SendRequestAsync();
-        if (!string.IsNullOrEmpty(work.Summary) && (work.Summary.ToLower().Contains("not provided") || work.Summary.ToLower().Contains("i cannot provide") || (work.Summary.ToLower().Contains("did not find any information"))))
+        var summ = await SendRequestAsync();
+        Console.WriteLine(summ);
+        if (!string.IsNullOrEmpty(summ) && (summ.ToLower().Contains("not provided") || summ.ToLower().Contains("i cannot provide") || (summ.ToLower().Contains("did not find any information"))))
         {
-            work.Summary = string.Empty;
-            //TODO: Log issue - High
+            return;
+        }
+        else{
+            work.Summary = summ;
         }
     }
 
