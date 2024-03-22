@@ -20,6 +20,7 @@ namespace ResourcingToolKit.DTO
         public string Address { get; set; }
         public string Linkedin { get; set; }
         public List<QualificationDTO> Qualification { get; set; }
+        public List<CertificationDTO> Certification { get; set; }
         public List<WorkHistoryDTO> WorkHistory { get; set; }
         public string Summary { get; set; }
         public string KeySkills { get; set; }
@@ -30,7 +31,7 @@ namespace ResourcingToolKit.DTO
     public class WorkHistoryDTO
     {
         public string Company { get; set; }
-        public string Employer {  get; set; }   
+        public string Employer { get; set; }
         public string Position { get; set; }
         public string Duration { get; set; }
         public string Location { get; set; }
@@ -41,10 +42,19 @@ namespace ResourcingToolKit.DTO
     public class QualificationDTO
     {
         public string Degree { get; set; }
-        public string Certification { get; set; }
         public string Field { get; set; }
         public string University { get; set; }
         public string College { get; set; }
+        public string Month { get; set; }
+        public string Year { get; set; }
+        public string Location { get; set; }
+        public string DisplayDate { get; set; }
+        public string Summary { get; set; }
+    }
+
+    public class CertificationDTO
+    {
+        public string Certification { get; set; }
         public string Month { get; set; }
         public string Year { get; set; }
         public string Location { get; set; }
@@ -60,9 +70,23 @@ namespace ResourcingToolKit.DTO
             {
                 foreach (var item in candidate.WorkHistory)
                 {
-                    if (string.IsNullOrEmpty(item.Company) && !string.IsNullOrEmpty(item.Employer)){
+                    if (string.IsNullOrEmpty(item.Company) && !string.IsNullOrEmpty(item.Employer))
+                    {
                         item.Company = item.Employer;
                     }
+                }
+            }
+
+            if (candidate.Certification != null && candidate.Certification.Count > 0)
+            {
+                foreach (var item in candidate.Certification)
+                {
+                    var qual = new QualificationDTO();
+                    qual.Degree = item.Certification.ToLower().Contains("certification")? item.Certification: "Certification in " + item.Certification;
+                    qual.Year = string.IsNullOrEmpty(item.Month)? item.Year : item.Month + " " + item.Year;
+                    qual.Month = item.Month;
+                    qual.Location = item.Location;
+                    candidate.Qualification.Add(qual);
                 }
             }
 
@@ -110,9 +134,6 @@ namespace ResourcingToolKit.DTO
                 if (!string.IsNullOrEmpty(qual.Degree))
                     summary += $"{qual.Degree} ";
 
-                if (!string.IsNullOrEmpty(qual.Certification))
-                    summary += $"({qual.Certification}) ";
-
                 if (!string.IsNullOrEmpty(qual.Field))
                     summary += $"in {qual.Field} ";
 
@@ -125,7 +146,7 @@ namespace ResourcingToolKit.DTO
                 if (!string.IsNullOrEmpty(qual.DisplayDate))
                     summary += $"in {qual.DisplayDate}";
 
-                qual.Summary =  summary.Trim();
+                qual.Summary = summary.Trim();
             }
 
         }

@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using DocumentFormat.OpenXml.Math;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace ResourcingToolKit;
 [XamlCompilation(XamlCompilationOptions.Skip)]
@@ -113,6 +114,7 @@ public partial class MainPage : ContentPage
 
         Candidate candidate = new Candidate();
         StringBuilder stringBuilder;
+        string linkeidIn = string.Empty;
         try
         {
             using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(file, false))
@@ -153,12 +155,22 @@ public partial class MainPage : ContentPage
                                 break;
                         }
                     }
-
                     stringBuilder.Append(Environment.NewLine);
+                }
+
+                IEnumerable<HyperlinkRelationship> hyperlinks = from r in wordprocessingDocument.MainDocumentPart.HyperlinkRelationships where ((r.RelationshipType == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")) select r;
+                foreach (HyperlinkRelationship hr in hyperlinks)
+                {
+                    if (hr.Uri.ToString().ToLower().Contains("linkedin.com"))
+                    {
+                        linkeidIn = hr.Uri.ToString();
+                    }
                 }
             }
 
             var txt = stringBuilder.ToString();
+            txt = txt.Replace("linkedin", linkeidIn, true, CultureInfo.InvariantCulture);
+
 
             var sbPrompt = new StringBuilder();
             sbPrompt.AppendLine("You are a text processing agent working with candidates resumes.");
@@ -173,6 +185,13 @@ public partial class MainPage : ContentPage
             //sbPrompt.AppendLine("\"Certification\" <string>");
             sbPrompt.AppendLine("\"University\" <string>");
             sbPrompt.AppendLine("\"College\" <string>");
+            sbPrompt.AppendLine("\"Month\" <string>");
+            sbPrompt.AppendLine("\"Year\" <string>");
+            sbPrompt.AppendLine("\"Location\" <string>");
+            sbPrompt.AppendLine("}]");
+            sbPrompt.AppendLine("\"Certification\"");
+            sbPrompt.AppendLine("[{");
+            sbPrompt.AppendLine("\"Certification\" <string>");
             sbPrompt.AppendLine("\"Month\" <string>");
             sbPrompt.AppendLine("\"Year\" <string>");
             sbPrompt.AppendLine("\"Location\" <string>");
