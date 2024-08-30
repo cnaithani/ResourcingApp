@@ -500,6 +500,9 @@ public partial class MainPage : ContentPage
 
         for (int ctr = 0; ctr < ctrWork; ctr++)
         {
+            if (string.IsNullOrEmpty(candidate.WorkHistory[ctr].Summary))
+                continue;
+
             var workText = candidate.WorkHistory[ctr].Summary.Split("\n- ");
             if (workText.Length>0 && workText[0].EndsWith(":\n"))
             {
